@@ -61,4 +61,6 @@ class ofApp : public ofBaseApp {
         float midGuiY;
 
         void configureCanvas(ofxUICanvas *canvas);
+
+        ofxUILabelButton *openFileButton;
 };

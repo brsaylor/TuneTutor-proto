@@ -20,7 +20,7 @@ void ofApp::setup() {
     topGui->setGlobalButtonDimension(64);
     
     topGui->setWidgetPosition(OFX_UI_WIDGET_POSITION_RIGHT);
-    topGui->addLabelButton("Open File", false);
+    openFileButton = topGui->addLabelButton("Open File", false);
 
     topGui->addSpacer(padding, 0);
 
@@ -268,6 +268,13 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::guiEvent(ofxUIEventArgs &e) {
+    if (e.widget == openFileButton && openFileButton->getValue()) {
+		ofFileDialogResult openFileResult = ofSystemLoadDialog(
+                "Open Sound File"); 
+		if (openFileResult.bSuccess) {
+            ofLog() << openFileResult.getPath();
+		}
+    }
 }
 
 //--------------------------------------------------------------
