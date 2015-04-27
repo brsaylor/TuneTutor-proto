@@ -113,9 +113,13 @@ void ofApp::setup() {
     configureCanvas(midGui);
 
     midGui->setWidgetPosition(OFX_UI_WIDGET_POSITION_RIGHT);
-    midGui->addIntSlider("Speed (%)", 10, 100, &speed, ofGetWidth()/3 - padding, 16);
-    midGui->addIntSlider("Transpose (semitones)", -12, 12, &transpose, ofGetWidth()/3 - padding, 16);
-    midGui->addIntSlider("Tuning (cents)", -50, 50, &tuning, ofGetWidth()/3 - padding, 16);
+    speedSlider = midGui->addIntSlider(
+            "Speed (%)", 10, 100, &speed, ofGetWidth()/3 - padding, 16);
+    transposeSlider = midGui->addIntSlider(
+            "Transpose (semitones)", -12, 12, &transpose,
+            ofGetWidth()/3 - padding, 16);
+    tuningSlider = midGui->addIntSlider(
+            "Tuning (cents)", -50, 50, &tuning, ofGetWidth()/3 - padding, 16);
 
     midGui->autoSizeToFitWidgets();
     ofAddListener(midGui->newGUIEvent, this, &ofApp::guiEvent);
@@ -321,6 +325,8 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     } else if (e.widget == playButton) {
         playing = true;
         soundStream.start();
+    } else if (e.widget == speedSlider) {
+        stretcher->setTimeRatio(1.0 / (speed / 100.0));
     }
 }
 

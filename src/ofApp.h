@@ -68,6 +68,9 @@ class ofApp : public ofBaseApp {
 
         ofxUILabelButton *openFileButton;
         ofxUIImageButton *playButton;
+        ofxUIIntSlider *speedSlider;
+        ofxUIIntSlider *transposeSlider;
+        ofxUIIntSlider *tuningSlider;
 
         // Audio setup
         bool playing;
