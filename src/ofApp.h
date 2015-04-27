@@ -63,4 +63,9 @@ class ofApp : public ofBaseApp {
         void configureCanvas(ofxUICanvas *canvas);
 
         ofxUILabelButton *openFileButton;
+
+        // Sound file
+        std::vector<float> inputSamples;
+        int sampleRate;
+        int channels;
 };

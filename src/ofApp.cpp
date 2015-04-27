@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "soundfile.h"
 
 //--------------------------------------------------------------
 void ofApp::setup() {
@@ -273,6 +274,17 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
                 "Open Sound File"); 
 		if (openFileResult.bSuccess) {
             ofLog() << openFileResult.getPath();
+            bool ok = loadSoundFile(openFileResult.getPath(),
+                    inputSamples, sampleRate, channels);
+            if (ok) {
+                ofLog() << "Successfully opened file "
+                    << openFileResult.getPath()
+                    << "\nSize: " << inputSamples.size()
+                    << "\nSample rate: " << sampleRate
+                    << "\nChannels: " << channels;
+            } else {
+                ofLogError() << "Error opening sound file";
+            }
 		}
     }
 }
