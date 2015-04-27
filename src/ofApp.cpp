@@ -327,6 +327,8 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
         soundStream.start();
     } else if (e.widget == speedSlider) {
         stretcher->setTimeRatio(1.0 / (speed / 100.0));
+    } else if (e.widget == transposeSlider || e.widget == tuningSlider) {
+        stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
     }
 }
 
