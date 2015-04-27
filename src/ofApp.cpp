@@ -13,6 +13,38 @@ void ofApp::setup() {
     speed = 100;
     transpose = 0;
     tuning = 0;
+    playing = false;
+
+    // Set up audio
+    // FIXME: need to update channels and samplerate when soundfile is loaded
+    bufferSize = 512;
+    sampleRate = 44100;
+    channels = 2;
+    soundStream.setup(this, channels, 0, sampleRate, bufferSize, 4);
+    soundStream.stop();
+
+    // Set up time stretching
+    
+    stretchInBufL.resize(bufferSize);
+    stretchInBufR.resize(bufferSize);
+    stretchInBuf.resize(channels);
+    stretchInBuf[0] = &(stretchInBufL[0]);
+    stretchInBuf[1] = &(stretchInBufR[0]);
+
+    stretchOutBufL.resize(bufferSize);
+    stretchOutBufR.resize(bufferSize);
+    stretchOutBuf.resize(channels);
+    stretchOutBuf[0] = &(stretchOutBufL[0]);
+    stretchOutBuf[1] = &(stretchOutBufR[0]);
+    
+    stretcher = new RubberBand::RubberBandStretcher(sampleRate, channels,
+            RubberBand::RubberBandStretcher::DefaultOptions |
+            RubberBand::RubberBandStretcher::OptionProcessRealTime);
+    stretcher->setMaxProcessSize(bufferSize);
+
+    /*********************************
+     * Set up GUI
+     *********************************/
 
     padding = 10;
 
@@ -26,7 +58,7 @@ void ofApp::setup() {
     topGui->addSpacer(padding, 0);
 
     topGui->addImageButton("back", "images/back.png", false);
-    topGui->addImageButton("play", "images/play.png", false);
+    playButton = topGui->addImageButton("play", "images/play.png", false);
     topGui->addImageButton("forward", "images/forward.png", false);
 
     topGui->addSpacer(padding, 0);
@@ -286,6 +318,9 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
                 ofLogError() << "Error opening sound file";
             }
 		}
+    } else if (e.widget == playButton) {
+        playing = true;
+        soundStream.start();
     }
 }
 
@@ -332,4 +367,46 @@ void ofApp::gotMessage(ofMessage msg) {
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo) { 
 
+}
+
+//--------------------------------------------------------------
+void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
+    /*
+     * This code just plays the sound
+    for (int i = 0; i < bufferSize; i++){
+        output[i*nChannels] = inputSamples[playheadPos*nChannels + i*nChannels];
+        output[i*nChannels + 1] = inputSamples[playheadPos*nChannels + i*nChannels + 1];
+    }
+    playheadPos += bufferSize;
+    */
+
+    // While there are fewer than bufferSize output samples available, feed more
+    // input samples into the timestretcher
+    // Note: buffer size of stretcher input doesn't necessarily need to be the
+    // same as the output buffer size
+    while (stretcher->available() < bufferSize) {
+    
+        // Deinterleave into the stretcher input buffers
+        for (int i = 0; i < bufferSize; i++) {
+            stretchInBufL[i] = inputSamples[(playheadPos + i) * channels];
+            stretchInBufR[i] = inputSamples[(playheadPos + i) * channels + 1];
+        }
+
+        // FIXME: check for end of sound
+        
+        stretcher->process(&(stretchInBuf[0]), bufferSize, false);
+
+        playheadPos += bufferSize;
+    }
+
+    size_t samplesRetrieved = stretcher->retrieve(&(stretchOutBuf[0]), bufferSize);
+    if (samplesRetrieved != (size_t) bufferSize) {
+        ofLog() << "Retrieved " << samplesRetrieved << endl;
+    }
+
+    // Interleave output from stretcher into audio output
+    for (int i = 0; i < bufferSize; i++) {
+        output[i * nChannels] = stretchOutBufL[i];
+        output[i * nChannels + 1] = stretchOutBufR[i];
+    }
 }

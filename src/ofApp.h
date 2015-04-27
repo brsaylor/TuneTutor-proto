@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rubberband/RubberBandStretcher.h>
+
 #include "ofMain.h"
 #include "ofxUI.h"
 
@@ -19,6 +21,8 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+        void audioOut(float* output, int bufferSize, int nChannels);
+        ofSoundStream soundStream;
 		
         ofxUICanvas *topGui;   	
         ofxUICanvas *midGui;
@@ -63,9 +67,27 @@ class ofApp : public ofBaseApp {
         void configureCanvas(ofxUICanvas *canvas);
 
         ofxUILabelButton *openFileButton;
+        ofxUIImageButton *playButton;
+
+        // Audio setup
+        bool playing;
+        int bufferSize;
 
         // Sound file
         std::vector<float> inputSamples;
         int sampleRate;
         int channels;
+
+        int playheadPos;
+
+        // Time stretcher
+        RubberBand::RubberBandStretcher *stretcher;
+        //
+        vector<float*> stretchInBuf;
+        vector<float> stretchInBufL;
+        vector<float> stretchInBufR;
+        //
+        vector<float*> stretchOutBuf;
+        vector<float> stretchOutBufL;
+        vector<float> stretchOutBufR;
 };
