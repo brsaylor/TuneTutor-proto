@@ -5,12 +5,18 @@
 #include "ofMain.h"
 #include "ofxUI.h"
 
+extern "C" {
+#include <aubio/aubio.h>
+}
+
 class ofApp : public ofBaseApp {
 
 	public:
 		void setup();
 		void update();
 		void draw();
+
+        void drawVisualization();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -87,11 +93,26 @@ class ofApp : public ofBaseApp {
         // Time stretcher
         RubberBand::RubberBandStretcher *stretcher;
         //
-        vector<float*> stretchInBuf;
-        vector<float> stretchInBufL;
-        vector<float> stretchInBufR;
+        std::vector<float*> stretchInBuf;
+        std::vector<float> stretchInBufL;
+        std::vector<float> stretchInBufR;
         //
-        vector<float*> stretchOutBuf;
-        vector<float> stretchOutBufL;
-        vector<float> stretchOutBufR;
+        std::vector<float*> stretchOutBuf;
+        std::vector<float> stretchOutBufL;
+        std::vector<float> stretchOutBufR;
+
+        // Pitch detection
+        aubio_pitch_t *pitchDetector;
+        size_t pdBufSize;
+        size_t pdHopSize;
+        fvec_t *pdInBuf;
+        fvec_t *pdOutBuf;
+        std::vector<float> pitchValues;
+        void detectPitches();
+        float minPitch;
+        float maxPitch;
+
+        // Pitch visualization
+        int pxPerPitchValue;
+        int pitchValuesToDraw;
 };

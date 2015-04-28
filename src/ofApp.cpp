@@ -42,6 +42,27 @@ void ofApp::setup() {
             RubberBand::RubberBandStretcher::OptionProcessRealTime);
     stretcher->setMaxProcessSize(bufferSize);
 
+    /****************************
+     * Set up pitch detector
+     ****************************/
+    
+    // These are not used by aubio, just for postprocessing detected pitches
+    minPitch = 35.; // G below middle C
+    maxPitch = 86.; // high D
+
+    // Set up pitch detection
+    pdBufSize = 2048;
+    pdHopSize = 512;
+    pitchDetector = new_aubio_pitch(const_cast<char *>("yinfft"),
+            pdBufSize, pdHopSize, sampleRate);
+    aubio_pitch_set_unit(pitchDetector, const_cast<char *>("midi"));
+    pdInBuf = new_fvec(pdHopSize);
+    pdOutBuf = new_fvec(1);
+
+    // pitch visualization
+    pxPerPitchValue = 10;
+    pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
+
     /*********************************
      * Set up GUI
      *********************************/
@@ -287,10 +308,7 @@ void ofApp::draw() {
             selectionEnd - selectionStart, selectionStripHeight);
 
     // Draw visualization area
-    ofNoFill();
-    ofRect(
-            padding, selectionStripY + selectionStripHeight,
-            ofGetWidth() - 2 * padding, vizHeight);
+    drawVisualization();
 
     // Draw play and mark lines
     ofSetColor(playLineColor);
@@ -321,6 +339,40 @@ void ofApp::draw() {
             180 + 190/2, contextBoxY + contextBoxHeight);
 }
 
+void ofApp::drawVisualization() {
+    float top = selectionStripY + selectionStripHeight;
+    float width = ofGetWidth() - 2 * padding;
+    float height = vizHeight;
+
+    ofFill();
+    ofSetColor(96);
+    ofRect(padding, top, width, height);
+
+    ofSetColor(255);
+
+    ofBeginShape();
+    for (int i = 0; i < pitchValuesToDraw; i++) {
+        // subtract pitchValuesToDraw/2 to put the playhead position in the middle
+        int pitchIndex = (playheadPos / pdHopSize + i) - pitchValuesToDraw/2;
+        if (pitchIndex > pitchValues.size()) {
+            break;
+        }
+        float pitch;
+        if (pitchIndex < 0) {
+           pitch = 0.;
+        } else {
+           pitch = pitchValues[pitchIndex];
+        }
+        float x = i * pxPerPitchValue + padding;
+        float y = ((pitch + transpose - minPitch) / (maxPitch - minPitch) * -1 + 1) * height + top;
+            
+        ofVertex(x, y);
+    }
+    ofVertex(width + padding, top + height);
+    ofVertex(padding, top + height);
+    ofEndShape();
+}
+
 //--------------------------------------------------------------
 void ofApp::guiEvent(ofxUIEventArgs &e) {
     if (e.widget == openFileButton && openFileButton->getValue()) {
@@ -336,6 +388,7 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
                     << "\nSize: " << inputSamples.size()
                     << "\nSample rate: " << sampleRate
                     << "\nChannels: " << channels;
+                detectPitches();
             } else {
                 ofLogError() << "Error opening sound file";
             }
@@ -435,4 +488,48 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         output[i * nChannels] = stretchOutBufL[i];
         output[i * nChannels + 1] = stretchOutBufR[i];
     }
+}
+
+//-------------------------------------------------------
+void ofApp::detectPitches() {
+
+    pitchValues.resize(inputSamples.size() / pdHopSize);
+
+    static int spuriousHold = 0;
+
+    ofLog() << "Detecting pitches..."; 
+
+    // Hop
+    for (size_t i = 0; i < pitchValues.size(); i++) {
+
+        // Fill input buffer by summing the channels of a chunk of the audio
+        for (size_t j = 0; j < pdHopSize; j++) {
+            if ((i * pdHopSize + j) * channels + 1 > inputSamples.size()) {
+                break;
+            }
+            pdInBuf->data[j] =
+                inputSamples[(i * pdHopSize + j) * channels] +
+                inputSamples[(i * pdHopSize + j) * channels + 1];
+        }
+
+        // Detect the pitch for this hop
+        aubio_pitch_do(pitchDetector, pdInBuf, pdOutBuf);
+
+        float pitch = pdOutBuf->data[0];
+        
+        // Post-process to remove spurious pitch estimates
+        if (i > 0 && spuriousHold < 10 &&
+                (aubio_pitch_get_confidence(pitchDetector) < 0.50
+                 || (pitchValues[i - 1] - pitch) > 7)) {
+            pitchValues[i] = pitchValues[i - 1];
+            spuriousHold++;
+        } else {
+            spuriousHold = 0;
+            pitchValues[i] = pitch;
+        }
+        //ofLog() << pitchValues[i] << " ";
+
+    }
+
+    ofLog() << "done." << endl;
 }
