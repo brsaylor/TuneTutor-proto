@@ -202,43 +202,51 @@ void ofApp::setup() {
     float metadataTableX = markTable->getRect()->getX() +
         markTable->getRect()->getWidth() + padding;
     float metadataTableY = markTableHeaderY;
-    ofxUICanvas *metadataTable = new ofxUICanvas(
-            metadataTableX, metadataTableY,
-            ofGetWidth() - metadataTableX,
-            ofGetHeight() - metadataTableY);
+    ofxUICanvas *metadataTable = new ofxUICanvas();
+    ofxUIRectangle *rect = metadataTable->getRect();
+    rect->setX(metadataTableX);
+    rect->setY(metadataTableY);
+    rect->setWidth(ofGetWidth() - metadataTableX);
+    rect->setHeight(ofGetHeight() - metadataTableY);
     configureCanvas(metadataTable);
 
     ofxUILabel *label;
     ofxUITextInput *textInput;
 
     label = metadataTable->addLabel("Title", OFX_UI_FONT_MEDIUM);
-    textInput = new ofxUITextInput("", "test title", 100, 0, 0, 0);
+    textInput = new ofxUITextInput("", "test title", 200, 0, 0, 0);
     metadataTable->addWidgetEastOf(textInput, "Title", false);
+    textInput->getRect()->setX(150);
 
     label = new ofxUILabel("Artist", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "Title", false);
-    textInput = new ofxUITextInput("", "test artist", 100, 0, 0, 0);
+    textInput = new ofxUITextInput("", "test artist", 200, 0, 0, 0);
     metadataTable->addWidgetEastOf(textInput, "Artist", false);
+    textInput->getRect()->setX(150);
 
     label = new ofxUILabel("Album", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "Artist", false);
-    textInput = new ofxUITextInput("", "test album", 100, 0, 0, 0);
+    textInput = new ofxUITextInput("", "test album", 200, 0, 0, 0);
     metadataTable->addWidgetEastOf(textInput, "Album", false);
+    textInput->getRect()->setX(150);
 
     label = new ofxUILabel("Rhythm", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "Album", false);
-    textInput = new ofxUITextInput("", "test rhythm", 100, 0, 0, 0);
+    textInput = new ofxUITextInput("", "test rhythm", 200, 0, 0, 0);
     metadataTable->addWidgetEastOf(textInput, "Rhythm", false);
+    textInput->getRect()->setX(150);
 
     label = new ofxUILabel("Key", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "Rhythm", false);
-    textInput = new ofxUITextInput("", "test key", 100, 0, 0, 0);
+    textInput = new ofxUITextInput("", "test key", 200, 0, 0, 0);
     metadataTable->addWidgetEastOf(textInput, "Key", false);
+    textInput->getRect()->setX(150);
 
     label = new ofxUILabel("Tempo", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "Key", false);
-    textInput = new ofxUITextInput("", "test tempo", 100, 0, 0, 0);
+    textInput = new ofxUITextInput("", "test tempo", 200, 0, 0, 0);
     metadataTable->addWidgetEastOf(textInput, "Tempo", false);
+    textInput->getRect()->setX(150);
 
     metadataTable->autoSizeToFitWidgets();
 
