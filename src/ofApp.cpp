@@ -126,7 +126,17 @@ void ofApp::setup() {
 
     //----------------------------------------------------------
     
-    float markTableHeaderY = midGuiY + midGui->getRect()->getHeight() + padding; 
+    float markTableGuiY = midGuiY + midGui->getRect()->getHeight() + padding;
+    ofxUICanvas *markTableGui = new ofxUICanvas();
+    markTableGui->getRect()->setY(markTableGuiY);
+    configureCanvas(markTableGui);
+    markTableGui->setWidgetPosition(OFX_UI_WIDGET_POSITION_RIGHT);
+    markTableGui->addLabel("Marks", OFX_UI_FONT_LARGE);
+    addMarkButton = markTableGui->addLabelButton("Add Mark", false, false);
+    markTableGui->autoSizeToFitWidgets();
+    
+    float markTableHeaderY = markTableGuiY +
+        markTableGui->getRect()->getHeight() + padding; 
     ofxUICanvas *markTableHeader = new ofxUICanvas(0, markTableHeaderY, 10, 10);
     configureCanvas(markTableHeader);
     markTableHeader->setWidgetPosition(OFX_UI_WIDGET_POSITION_RIGHT);

@@ -71,6 +71,7 @@ class ofApp : public ofBaseApp {
         ofxUIIntSlider *speedSlider;
         ofxUIIntSlider *transposeSlider;
         ofxUIIntSlider *tuningSlider;
+        ofxUILabelButton *addMarkButton;
 
         // Audio setup
         bool playing;
