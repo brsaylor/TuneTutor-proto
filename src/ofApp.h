@@ -33,6 +33,7 @@ class ofApp : public ofBaseApp {
 		
         ofxUICanvas *topGui;   	
         ofxUICanvas *midGui;
+        ofxUICanvas *metadataTable;
         ofxUIScrollableCanvas *markTable;
         void guiEvent(ofxUIEventArgs &e);
 

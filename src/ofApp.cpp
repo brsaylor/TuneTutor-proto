@@ -223,7 +223,7 @@ void ofApp::setup() {
     float metadataTableX = markTable->getRect()->getX() +
         markTable->getRect()->getWidth() + padding;
     float metadataTableY = markTableHeaderY;
-    ofxUICanvas *metadataTable = new ofxUICanvas();
+    metadataTable = new ofxUICanvas();
     ofxUIRectangle *rect = metadataTable->getRect();
     rect->setX(metadataTableX);
     rect->setY(metadataTableY);
@@ -234,39 +234,39 @@ void ofApp::setup() {
     ofxUILabel *label;
     ofxUITextInput *textInput;
 
-    label = metadataTable->addLabel("Title", OFX_UI_FONT_MEDIUM);
-    textInput = new ofxUITextInput("", "test title", 200, 0, 0, 0);
-    metadataTable->addWidgetEastOf(textInput, "Title", false);
+    label = metadataTable->addLabel("titleLabel", "Title", OFX_UI_FONT_MEDIUM);
+    textInput = new ofxUITextInput("title", "test title", 400, 0, 0, 0);
+    metadataTable->addWidgetEastOf(textInput, "titleLabel", false);
     textInput->getRect()->setX(150);
 
-    label = new ofxUILabel("Artist", OFX_UI_FONT_MEDIUM);
-    metadataTable->addWidgetSouthOf(label, "Title", false);
-    textInput = new ofxUITextInput("", "test artist", 200, 0, 0, 0);
-    metadataTable->addWidgetEastOf(textInput, "Artist", false);
+    label = new ofxUILabel("artistLabel", "Artist", OFX_UI_FONT_MEDIUM);
+    metadataTable->addWidgetSouthOf(label, "titleLabel", false);
+    textInput = new ofxUITextInput("artist", "test artist", 400, 0, 0, 0);
+    metadataTable->addWidgetEastOf(textInput, "artistLabel", false);
     textInput->getRect()->setX(150);
 
-    label = new ofxUILabel("Album", OFX_UI_FONT_MEDIUM);
-    metadataTable->addWidgetSouthOf(label, "Artist", false);
-    textInput = new ofxUITextInput("", "test album", 200, 0, 0, 0);
-    metadataTable->addWidgetEastOf(textInput, "Album", false);
+    label = new ofxUILabel("albumLabel", "Album", OFX_UI_FONT_MEDIUM);
+    metadataTable->addWidgetSouthOf(label, "artistLabel", false);
+    textInput = new ofxUITextInput("album", "test album", 400, 0, 0, 0);
+    metadataTable->addWidgetEastOf(textInput, "albumLabel", false);
     textInput->getRect()->setX(150);
 
-    label = new ofxUILabel("Rhythm", OFX_UI_FONT_MEDIUM);
-    metadataTable->addWidgetSouthOf(label, "Album", false);
-    textInput = new ofxUITextInput("", "test rhythm", 200, 0, 0, 0);
-    metadataTable->addWidgetEastOf(textInput, "Rhythm", false);
+    label = new ofxUILabel("rhythmLabel", "Rhythm", OFX_UI_FONT_MEDIUM);
+    metadataTable->addWidgetSouthOf(label, "albumLabel", false);
+    textInput = new ofxUITextInput("rhythm", "test rhythm", 200, 0, 0, 0);
+    metadataTable->addWidgetEastOf(textInput, "rhythmLabel", false);
     textInput->getRect()->setX(150);
 
-    label = new ofxUILabel("Key", OFX_UI_FONT_MEDIUM);
-    metadataTable->addWidgetSouthOf(label, "Rhythm", false);
-    textInput = new ofxUITextInput("", "test key", 200, 0, 0, 0);
-    metadataTable->addWidgetEastOf(textInput, "Key", false);
+    label = new ofxUILabel("keyLabel", "Key", OFX_UI_FONT_MEDIUM);
+    metadataTable->addWidgetSouthOf(label, "rhythmLabel", false);
+    textInput = new ofxUITextInput("key", "test key", 200, 0, 0, 0);
+    metadataTable->addWidgetEastOf(textInput, "keyLabel", false);
     textInput->getRect()->setX(150);
 
-    label = new ofxUILabel("Tempo", OFX_UI_FONT_MEDIUM);
-    metadataTable->addWidgetSouthOf(label, "Key", false);
-    textInput = new ofxUITextInput("", "test tempo", 200, 0, 0, 0);
-    metadataTable->addWidgetEastOf(textInput, "Tempo", false);
+    label = new ofxUILabel("tempoLabel", "Tempo", OFX_UI_FONT_MEDIUM);
+    metadataTable->addWidgetSouthOf(label, "keyLabel", false);
+    textInput = new ofxUITextInput("temp", "test tempo", 200, 0, 0, 0);
+    metadataTable->addWidgetEastOf(textInput, "tempoLabel", false);
     textInput->getRect()->setX(150);
 
     metadataTable->autoSizeToFitWidgets();
@@ -391,6 +391,15 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
                     << "\nSize: " << inputSamples.size()
                     << "\nSample rate: " << sampleRate
                     << "\nChannels: " << channels;
+                
+                SoundFileMetadata metadata = soundFile.getMetadata();
+                ((ofxUITextInput *) (metadataTable->getWidget("title")))
+                    ->setTextString(metadata.title);
+                ((ofxUITextInput *) (metadataTable->getWidget("artist")))
+                    ->setTextString(metadata.artist);
+                ((ofxUITextInput *) (metadataTable->getWidget("album")))
+                    ->setTextString(metadata.album);
+
                 detectPitches();
             } else {
                 ofLogError() << "Error opening sound file";

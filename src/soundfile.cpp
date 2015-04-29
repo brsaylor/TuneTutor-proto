@@ -29,6 +29,10 @@ std::vector<float> SoundFile::getSamples() {
     return samples;
 }
 
+SoundFileMetadata SoundFile::getMetadata() {
+    return metadata;
+}
+
 bool SoundFile::loadMp3(std::string path) {
 	int err = MPG123_OK;
     mpg123_init();
@@ -48,6 +52,24 @@ bool SoundFile::loadMp3(std::string path) {
     samples.resize(mpg123_length(f) * channels);
     mpg123_read(f, (unsigned char *) &(samples[0]),
             samples.size() * sizeof(float), &done);
+
+    // Get the metadata
+    mpg123_id3v1 *id3v1;
+    mpg123_id3v2 *id3v2;
+    mpg123_id3(f, &id3v1, &id3v2);
+    if (id3v2 != NULL) {
+        std::cout << "id3v2 data found" << std::endl;
+        metadata.title = id3v2->title->p;
+        metadata.artist = id3v2->artist->p;
+        metadata.album = id3v2->album->p;
+    } else if (id3v1 != NULL) {
+        std::cout << "id3v1 data found" << std::endl;
+        metadata.title = std::string(id3v1->title, 30);
+        metadata.artist = std::string(id3v1->artist, 30);
+        metadata.album = std::string(id3v1->album, 30);
+    } else {
+        std::cout << "No id3 data found" << std::endl;
+    }
 
 	mpg123_close(f);
 	mpg123_delete(f);
