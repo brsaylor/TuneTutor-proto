@@ -8,8 +8,28 @@ extern "C" {
 
 #include "soundfile.h"
 
-bool loadMp3(std::string path,
-        std::vector<float> &buffer, int &sampleRate, int &channels) {
+SoundFile::SoundFile() {
+    sampleRate = 0;
+    channels = 0;
+}
+
+bool SoundFile::load(std::string path) {
+    return loadMp3(path);
+}
+
+int SoundFile::getSampleRate() {
+    return sampleRate;
+}
+
+int SoundFile::getChannels() {
+    return channels;
+}
+
+std::vector<float> SoundFile::getSamples() {
+    return samples;
+}
+
+bool SoundFile::loadMp3(std::string path) {
 	int err = MPG123_OK;
     mpg123_init();
 	mpg123_handle *f = mpg123_new(NULL, &err);
@@ -25,17 +45,12 @@ bool loadMp3(std::string path,
     sampleRate = rate;
 
 	size_t done=0;
-    buffer.resize(mpg123_length(f) * channels);
-    mpg123_read(f, (unsigned char *) &(buffer[0]),
-            buffer.size() * sizeof(float), &done);
+    samples.resize(mpg123_length(f) * channels);
+    mpg123_read(f, (unsigned char *) &(samples[0]),
+            samples.size() * sizeof(float), &done);
 
 	mpg123_close(f);
 	mpg123_delete(f);
     
     return true;
-}
-
-bool loadSoundFile(std::string path,
-        std::vector<float> &buffer, int &sampleRate, int &channels) {
-    return loadMp3(path, buffer, sampleRate, channels);
 }

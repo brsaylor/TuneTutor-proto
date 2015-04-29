@@ -380,9 +380,12 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
                 "Open Sound File"); 
 		if (openFileResult.bSuccess) {
             ofLog() << openFileResult.getPath();
-            bool ok = loadSoundFile(openFileResult.getPath(),
-                    inputSamples, sampleRate, channels);
+            bool ok = soundFile.load(openFileResult.getPath());
             if (ok) {
+                sampleRate = soundFile.getSampleRate();
+                channels = soundFile.getChannels();
+                inputSamples = soundFile.getSamples();
+                
                 ofLog() << "Successfully opened file "
                     << openFileResult.getPath()
                     << "\nSize: " << inputSamples.size()

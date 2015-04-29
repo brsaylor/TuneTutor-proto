@@ -1,9 +1,10 @@
 #pragma once
 
 #include <rubberband/RubberBandStretcher.h>
-
 #include "ofMain.h"
 #include "ofxUI.h"
+
+#include "soundfile.h"
 
 extern "C" {
 #include <aubio/aubio.h>
@@ -84,6 +85,7 @@ class ofApp : public ofBaseApp {
         int bufferSize;
 
         // Sound file
+        SoundFile soundFile;
         std::vector<float> inputSamples;
         int sampleRate;
         int channels;
