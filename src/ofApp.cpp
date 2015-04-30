@@ -60,7 +60,9 @@ void ofApp::setup() {
     pdOutBuf = new_fvec(1);
 
     // pitch visualization
-    pxPerPitchValue = 10;
+    samplesPerPixel = 50;
+    pxPerPitchValue = pdHopSize / samplesPerPixel;
+    ofLog() << pxPerPitchValue;
     pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
 
     /*********************************
@@ -121,8 +123,9 @@ void ofApp::setup() {
     playLineColor.set(0, 255, 0);
     markLineColor.set(60, 160, 70);
 
+    vizTop = selectionStripY + selectionStripHeight;
     vizHeight = 240;
-    vizBottom = selectionStripY + selectionStripHeight + vizHeight;
+    vizBottom = vizTop + vizHeight;
 
     contextBoxY = vizBottom + padding;
     contextBoxHeight = 28;
@@ -449,18 +452,32 @@ void ofApp::mouseMoved(int x, int y ) {
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button) {
-
+void ofApp::mousePressed(int x, int y, int button) {
+    if (button == 0 && y >= vizTop && y <= vizBottom) {
+        draggingViz = true;
+        vizDragStartX = x;
+        prevPlayheadPos = playheadPos;
+        if (playing) {
+            soundStream.stop();
+        }
+    }
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button) {
-
+void ofApp::mouseDragged(int x, int y, int button) {
+    if (draggingViz) {
+        playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
-
+    if (draggingViz) {
+        draggingViz = false;
+        if (playing) {
+            soundStream.start();
+        }
+    }
 }
 
 //--------------------------------------------------------------

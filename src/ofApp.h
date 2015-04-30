@@ -65,8 +65,12 @@ class ofApp : public ofBaseApp {
         ofColor playLineColor;
         ofColor markLineColor;
 
+        float vizTop;
         float vizHeight;
         float vizBottom;
+
+        bool draggingViz;
+        int vizDragStartX;
 
         float contextStripY;
         float contextStripHeight;
@@ -95,6 +99,7 @@ class ofApp : public ofBaseApp {
         int sampleRate;
         int channels;
 
+        int prevPlayheadPos; // Position of playhead when dragging started
         int playheadPos;
 
         // Time stretcher
@@ -120,6 +125,7 @@ class ofApp : public ofBaseApp {
         float maxPitch;
 
         // Pitch visualization
+        int samplesPerPixel;
         int pxPerPitchValue;
         int pitchValuesToDraw;
 };
