@@ -80,6 +80,8 @@ void ofApp::setup() {
 
     topGui->addImageButton("back", "images/back.png", false);
     playButton = topGui->addImageButton("play", "images/play.png", false);
+    playImage = *playButton->getImage();
+    pauseImage.loadImage("images/pause.png");
     topGui->addImageButton("forward", "images/forward.png", false);
 
     topGui->addSpacer(padding, 0);
@@ -406,12 +408,28 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
             }
 		}
     } else if (e.widget == playButton) {
-        playing = true;
-        soundStream.start();
+        if (playButton->getValue()) {
+            playPause();
+        }
     } else if (e.widget == speedSlider) {
         stretcher->setTimeRatio(1.0 / (speed / 100.0));
     } else if (e.widget == transposeSlider || e.widget == tuningSlider) {
         stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
+    }
+}
+
+/**
+ * Play or pause playback, depending on whether currently playing
+ */
+void ofApp::playPause() {
+    if (playing) {
+        playButton->setImage(&playImage);
+        playing = false;
+        soundStream.stop();
+    } else {
+        playButton->setImage(&pauseImage);
+        playing = true;
+        soundStream.start();
     }
 }
 

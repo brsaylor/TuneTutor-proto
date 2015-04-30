@@ -37,6 +37,9 @@ class ofApp : public ofBaseApp {
         ofxUIScrollableCanvas *markTable;
         void guiEvent(ofxUIEventArgs &e);
 
+        ofImage pauseImage;
+        ofImage playImage;
+
     private:
         std::string fontFile = "DroidSans.ttf";
 
@@ -84,6 +87,7 @@ class ofApp : public ofBaseApp {
         // Audio setup
         bool playing;
         int bufferSize;
+        void playPause();
 
         // Sound file
         SoundFile soundFile;
