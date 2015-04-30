@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "ofApp.h"
 #include "soundfile.h"
 
@@ -69,6 +71,10 @@ void ofApp::setup() {
      * Set up GUI
      *********************************/
 
+    draggingSelectionStart = false;
+    draggingSelectionEnd = false;
+    draggingViz = false;
+
     padding = 10;
 
     topGui = new ofxUICanvas();
@@ -114,16 +120,17 @@ void ofApp::setup() {
     marks.push_back(250);
     marks.push_back(650);
 
-    selectionStripY = markStripY + markHeight;
+    selectionStripTop = markStripY + markHeight;
     selectionStripHeight = 16;
-    selectionStart = marks[0];
-    selectionEnd = marks[2];
+    selectionStripBottom = selectionStripTop + selectionStripHeight;
+    selectionStart = -1;
+    selectionEnd = -1;
 
     mainColor.set(128);
     playLineColor.set(0, 255, 0);
     markLineColor.set(60, 160, 70);
 
-    vizTop = selectionStripY + selectionStripHeight;
+    vizTop = selectionStripBottom + 1;
     vizHeight = 240;
     vizBottom = vizTop + vizHeight;
 
@@ -289,7 +296,22 @@ void ofApp::configureCanvas(ofxUICanvas *canvas) {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-
+    
+    // Calculate screen coordinates of selection, and decide whether it is on or
+    // off screen
+    selectionStartX = getDisplayXFromSampleIndex(selectionStart);
+    selectionEndX = getDisplayXFromSampleIndex(selectionEnd);
+    if (selectionStartX > ofGetWidth() - padding || selectionEndX < padding) {
+        drawSelection = false;
+    } else {
+        drawSelection = true;
+        if (selectionStartX < padding) {
+            selectionStartX = padding;
+        }
+        if (selectionEndX > ofGetWidth() - padding) {
+            selectionEndX = ofGetWidth() - padding;
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -308,9 +330,12 @@ void ofApp::draw() {
     }
 
     // Draw selection strip
-    ofRect(
-            selectionStart, selectionStripY,
-            selectionEnd - selectionStart, selectionStripHeight);
+    if (drawSelection) {
+        ofRect(
+                selectionStartX, selectionStripTop,
+                selectionEndX - selectionStartX, selectionStripHeight);
+    }
+
 
     // Draw visualization area
     drawVisualization();
@@ -318,12 +343,12 @@ void ofApp::draw() {
     // Draw play and mark lines
     ofSetColor(playLineColor);
     ofLine(
-            ofGetWidth() * .5, selectionStripY, 
+            ofGetWidth() * .5, selectionStripTop, 
             ofGetWidth() * .5, vizBottom);
     ofSetColor(markLineColor);
     for (unsigned int i = 0; i < marks.size(); i++) {
         ofLine(
-                marks[i], selectionStripY,
+                marks[i], selectionStripTop,
                 marks[i], vizBottom);
     }
 
@@ -345,7 +370,7 @@ void ofApp::draw() {
 }
 
 void ofApp::drawVisualization() {
-    float top = selectionStripY + selectionStripHeight;
+    float top = selectionStripBottom;
     float width = ofGetWidth() - 2 * padding;
     float height = vizHeight;
 
@@ -448,17 +473,22 @@ void ofApp::keyReleased(int key) {
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ) {
-
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-    if (button == 0 && y >= vizTop && y <= vizBottom) {
-        draggingViz = true;
-        vizDragStartX = x;
-        prevPlayheadPos = playheadPos;
-        if (playing) {
-            soundStream.stop();
+    if (button == 0) {
+        if (y >= selectionStripTop && y <= selectionStripBottom) {
+            // Place the selection
+            selectionStart = getSampleIndexFromDisplayX(x - 100);
+            selectionEnd = getSampleIndexFromDisplayX(x + 100);
+        } else if (y >= vizTop && y <= vizBottom) {
+            draggingViz = true;
+            vizDragStartX = x;
+            prevPlayheadPos = playheadPos;
+            if (playing) {
+                soundStream.stop();
+            }
         }
     }
 }
@@ -579,4 +609,13 @@ void ofApp::detectPitches() {
     }
 
     ofLog() << "done." << endl;
+}
+
+float ofApp::getDisplayXFromSampleIndex(int sampleIndex) {
+   return ofGetWidth() / 2 + (sampleIndex - playheadPos) /
+       (float) samplesPerPixel;
+}
+
+int ofApp::getSampleIndexFromDisplayX(float displayX) {
+    return samplesPerPixel * (displayX - ofGetWidth() / 2) + playheadPos;
 }

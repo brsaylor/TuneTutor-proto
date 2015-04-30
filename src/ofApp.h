@@ -49,6 +49,9 @@ class ofApp : public ofBaseApp {
         int transpose;
         int tuning;
 
+        float getDisplayXFromSampleIndex(int sampleIndex);
+        int getSampleIndexFromDisplayX(float displayX);
+
         float padding;
 
         float markStripY;
@@ -56,10 +59,17 @@ class ofApp : public ofBaseApp {
         float markWidth;
         std::vector<float> marks;  // x coords
 
-        float selectionStripY;
+        bool drawSelection;
+        float selectionStripTop;
         float selectionStripHeight;
-        float selectionStart;
-        float selectionEnd;
+        float selectionStripBottom;
+        int selectionStart;
+        int selectionEnd;
+        float selectionStartX;
+        float selectionEndX;
+        bool draggingSelectionStart;
+        bool draggingSelectionEnd;
+        bool selectionDragStartX;
 
         ofColor mainColor;
         ofColor playLineColor;
