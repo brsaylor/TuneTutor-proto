@@ -41,7 +41,8 @@ class ofApp : public ofBaseApp {
         ofImage playImage;
 
     private:
-        std::string fontFile = "DroidSans.ttf";
+        const std::string fontFile = "DroidSans.ttf";
+        const int selectionHandleRadius = 8;
 
         float playbackDelay;
         float zoom;

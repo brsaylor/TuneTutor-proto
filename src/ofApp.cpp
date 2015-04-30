@@ -479,9 +479,19 @@ void ofApp::mouseMoved(int x, int y ) {
 void ofApp::mousePressed(int x, int y, int button) {
     if (button == 0) {
         if (y >= selectionStripTop && y <= selectionStripBottom) {
-            // Place the selection
-            selectionStart = getSampleIndexFromDisplayX(x - 100);
-            selectionEnd = getSampleIndexFromDisplayX(x + 100);
+            if (x > selectionStartX - selectionHandleRadius &&
+                    x < selectionStartX + selectionHandleRadius) {
+                // Start dragging the selection start
+                draggingSelectionStart = true;
+            } else if (x > selectionEndX - selectionHandleRadius &&
+                    x < selectionEndX + selectionHandleRadius) {
+                // Start dragging the selection end
+                draggingSelectionEnd = true;
+            } else {
+                // Place the selection
+                selectionStart = getSampleIndexFromDisplayX(x - 100);
+                selectionEnd = getSampleIndexFromDisplayX(x + 100);
+            }
         } else if (y >= vizTop && y <= vizBottom) {
             draggingViz = true;
             vizDragStartX = x;
@@ -495,7 +505,11 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-    if (draggingViz) {
+    if (draggingSelectionStart) {
+        selectionStart = getSampleIndexFromDisplayX(x);
+    } else if (draggingSelectionEnd) {
+        selectionEnd = getSampleIndexFromDisplayX(x);
+    } else if (draggingViz) {
         playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
     }
 }
@@ -508,6 +522,10 @@ void ofApp::mouseReleased(int x, int y, int button) {
             soundStream.start();
         }
     }
+    draggingSelectionStart = false;
+    draggingSelectionEnd = false;
+    ofLog() << "selectionStart = " << selectionStart
+        << ", selectionEnd = " << selectionEnd;
 }
 
 //--------------------------------------------------------------
