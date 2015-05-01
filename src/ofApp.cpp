@@ -517,6 +517,17 @@ void ofApp::mousePressed(int x, int y, int button) {
                 soundStream.stop();
             }
         }
+
+    } else if (button == 2) {
+        if (y >= markStripTop && y <= markStripBottom) {
+            // Check for right-click on mark
+            Mark *clickedMark = getMarkAtDisplayX(x);
+            if (clickedMark != nullptr) {
+                ofLog() << "Mark at position " << clickedMark->position
+                    << " clicked";
+                deleteMark(clickedMark);
+            }
+        }
     }
 }
 
@@ -661,10 +672,33 @@ int ofApp::getSampleIndexFromDisplayX(float displayX) {
     return samplesPerPixel * (displayX - ofGetWidth() / 2) + playheadPos;
 }
 
+Mark *ofApp::getMarkAtDisplayX(int x) {
+    Mark *locatedMark = nullptr;
+    float markX;
+    for (Mark *mark : marks) {
+        if (mark->position < displayStartSample) {
+            continue;
+        } else if (mark->position > displayEndSample) {
+            break;
+        }
+        markX = getDisplayXFromSampleIndex(mark->position);
+        if (x >= markX - markWidth && x <= markX + markWidth) {
+            locatedMark = mark;
+            break;
+        }
+    }
+    return locatedMark;
+}
+
 Mark *ofApp::insertMark(int position) {
     Mark *mark = new Mark();
     mark->position = position;
     mark->label = "";
     marks.insert(mark);
     return mark;
+}
+
+void ofApp::deleteMark(Mark *mark) {
+    marks.erase(mark);
+    delete mark;
 }
