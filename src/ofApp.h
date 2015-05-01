@@ -16,6 +16,20 @@ enum PlayMode {
     PLAYMODE_PLAY_TO_END
 };
 
+struct Mark {
+
+    /** Position of the mark in samples */
+    int position;
+
+    std::string label;
+};
+
+struct MarkCompare {
+    bool operator() (const Mark *mark1, const Mark *mark2) const {
+        return mark1->position < mark2->position;
+    }
+};
+
 class ofApp : public ofBaseApp {
 
 	public:
@@ -48,6 +62,8 @@ class ofApp : public ofBaseApp {
 
     private:
         const std::string fontFile = "DroidSans.ttf";
+        const float markWidth = 16;
+        const float markHeight = 12;
         const int selectionHandleRadius = 8;
 
         float playbackDelay;
@@ -57,15 +73,17 @@ class ofApp : public ofBaseApp {
         int tuning;
         PlayMode playMode;
 
+        int displayStartSample;
+        int displayEndSample;
         float getDisplayXFromSampleIndex(int sampleIndex);
         int getSampleIndexFromDisplayX(float displayX);
 
         float padding;
 
-        float markStripY;
-        float markHeight;
-        float markWidth;
-        std::vector<float> marks;  // x coords
+        float markStripTop;
+        float markStripBottom;
+        std::set<Mark*, MarkCompare> marks;
+        Mark *insertMark(int position);
 
         bool drawSelection;
         float selectionStripTop;

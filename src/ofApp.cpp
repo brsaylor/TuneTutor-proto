@@ -116,14 +116,10 @@ void ofApp::setup() {
 
     //----------------------------------------------------
 
-    markStripY = topGui->getRect()->getHeight() + padding;
-    markWidth = 16;
-    markHeight = 12;
-    marks.push_back(100);
-    marks.push_back(250);
-    marks.push_back(650);
+    markStripTop = topGui->getRect()->getHeight() + padding;
+    markStripBottom = markStripTop + markHeight;
 
-    selectionStripTop = markStripY + markHeight;
+    selectionStripTop = markStripTop + markHeight + 1;
     selectionStripHeight = 16;
     selectionStripBottom = selectionStripTop + selectionStripHeight;
     selectionStart = -1;
@@ -299,6 +295,9 @@ void ofApp::configureCanvas(ofxUICanvas *canvas) {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+
+    displayStartSample = getSampleIndexFromDisplayX(padding);
+    displayEndSample = getSampleIndexFromDisplayX(ofGetWidth() - padding);
     
     // Calculate screen coordinates of selection, and decide whether it is on or
     // off screen
@@ -324,14 +323,6 @@ void ofApp::draw() {
 
     ofFill();
 
-    // Draw mark strip
-    for (unsigned int i = 0; i < marks.size(); i++) {
-        ofTriangle(
-                marks[i] - markWidth * .5, markStripY,
-                marks[i] + markWidth * .5, markStripY,
-                marks[i], markStripY + markHeight);
-    }
-
     // Draw selection strip
     if (drawSelection) {
         ofRect(
@@ -343,16 +334,28 @@ void ofApp::draw() {
     // Draw visualization area
     drawVisualization();
 
-    // Draw play and mark lines
+    // Draw playhead line
     ofSetColor(playLineColor);
     ofLine(
             ofGetWidth() * .5, selectionStripTop, 
             ofGetWidth() * .5, vizBottom);
+    
+    // Draw marks
     ofSetColor(markLineColor);
-    for (unsigned int i = 0; i < marks.size(); i++) {
-        ofLine(
-                marks[i], selectionStripTop,
-                marks[i], vizBottom);
+    float markX;
+    for (Mark *mark : marks) {
+        if (mark->position < displayStartSample) {
+            continue;
+        } else if (mark->position > displayEndSample) {
+            break;
+        }
+
+        markX = getDisplayXFromSampleIndex(mark->position);
+        ofTriangle(
+                markX - markWidth * .5, markStripTop,
+                markX + markWidth * .5, markStripTop,
+                markX, markStripBottom);
+        ofLine(markX, markStripBottom, markX, vizBottom);
     }
 
     // Draw the context strip
@@ -490,7 +493,9 @@ void ofApp::mouseMoved(int x, int y ) {
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
     if (button == 0) {
-        if (y >= selectionStripTop && y <= selectionStripBottom) {
+        if (y >= markStripTop && y <= markStripBottom) {
+            insertMark(getSampleIndexFromDisplayX(x));
+        } else if (y >= selectionStripTop && y <= selectionStripBottom) {
             if (x > selectionStartX - selectionHandleRadius &&
                     x < selectionStartX + selectionHandleRadius) {
                 // Start dragging the selection start
@@ -654,4 +659,12 @@ float ofApp::getDisplayXFromSampleIndex(int sampleIndex) {
 
 int ofApp::getSampleIndexFromDisplayX(float displayX) {
     return samplesPerPixel * (displayX - ofGetWidth() / 2) + playheadPos;
+}
+
+Mark *ofApp::insertMark(int position) {
+    Mark *mark = new Mark();
+    mark->position = position;
+    mark->label = "";
+    marks.insert(mark);
+    return mark;
 }
