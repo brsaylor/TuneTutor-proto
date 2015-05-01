@@ -10,6 +10,12 @@ extern "C" {
 #include <aubio/aubio.h>
 }
 
+enum PlayMode {
+    PLAYMODE_PLAY_SELECTION,
+    PLAYMODE_LOOP_SELECTION,
+    PLAYMODE_PLAY_TO_END
+};
+
 class ofApp : public ofBaseApp {
 
 	public:
@@ -49,6 +55,7 @@ class ofApp : public ofBaseApp {
         int speed;
         int transpose;
         int tuning;
+        PlayMode playMode;
 
         float getDisplayXFromSampleIndex(int sampleIndex);
         int getSampleIndexFromDisplayX(float displayX);
@@ -94,6 +101,8 @@ class ofApp : public ofBaseApp {
 
         ofxUILabelButton *openFileButton;
         ofxUIImageButton *playButton;
+        ofxUIRadio *playModeRadio;
+        std::vector<ofxUIToggle *> playModeToggles;
         ofxUIIntSlider *speedSlider;
         ofxUIIntSlider *transposeSlider;
         ofxUIIntSlider *tuningSlider;

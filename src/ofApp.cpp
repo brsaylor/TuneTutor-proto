@@ -16,6 +16,7 @@ void ofApp::setup() {
     transpose = 0;
     tuning = 0;
     playing = false;
+    playMode = PLAYMODE_PLAY_TO_END;
 
     // Set up audio
     // FIXME: need to update channels and samplerate when soundfile is loaded
@@ -99,9 +100,11 @@ void ofApp::setup() {
     playModes.push_back("Play Selection");
     playModes.push_back("Loop Selection");
     playModes.push_back("Play to End");
-    ofxUIRadio *radio = topGui->addRadio("playMode", playModes,
+    playModeRadio = topGui->addRadio("playMode", playModes,
             OFX_UI_ORIENTATION_VERTICAL);
-    radio->activateToggle("Play Selection");
+    playModeToggles = playModeRadio->getToggles();
+    playModeRadio->activateToggle("Play to End");
+    playMode = PLAYMODE_PLAY_TO_END;
 
     topGui->addSpacer(padding, 0);
 
@@ -405,6 +408,8 @@ void ofApp::drawVisualization() {
 
 //--------------------------------------------------------------
 void ofApp::guiEvent(ofxUIEventArgs &e) {
+    std::string name = e.widget->getName();
+
     if (e.widget == openFileButton && openFileButton->getValue()) {
 		ofFileDialogResult openFileResult = ofSystemLoadDialog(
                 "Open Sound File"); 
@@ -439,11 +444,18 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
         if (playButton->getValue()) {
             playPause();
         }
+    } else if (e.widget == playModeToggles[0]) {
+        playMode = PLAYMODE_PLAY_SELECTION;
+    } else if (e.widget == playModeToggles[1]) {
+        playMode = PLAYMODE_LOOP_SELECTION;
+    } else if (e.widget == playModeToggles[2]) {
+        playMode = PLAYMODE_PLAY_TO_END;
     } else if (e.widget == speedSlider) {
         stretcher->setTimeRatio(1.0 / (speed / 100.0));
     } else if (e.widget == transposeSlider || e.widget == tuningSlider) {
         stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
     }
+
 }
 
 /**
@@ -524,8 +536,6 @@ void ofApp::mouseReleased(int x, int y, int button) {
     }
     draggingSelectionStart = false;
     draggingSelectionEnd = false;
-    ofLog() << "selectionStart = " << selectionStart
-        << ", selectionEnd = " << selectionEnd;
 }
 
 //--------------------------------------------------------------
@@ -571,6 +581,14 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         stretcher->process(&(stretchInBuf[0]), bufferSize, false);
 
         playheadPos += bufferSize;
+        if (playheadPos > selectionEnd) {
+            if (playMode == PLAYMODE_LOOP_SELECTION) {
+                playheadPos = selectionStart;
+            } else if (playMode == PLAYMODE_PLAY_SELECTION) {
+                playheadPos = selectionStart;
+                playPause();
+            }
+        }
     }
 
     size_t samplesRetrieved = stretcher->retrieve(&(stretchOutBuf[0]), bufferSize);
