@@ -83,9 +83,11 @@ class ofApp : public ofBaseApp {
         float markStripTop;
         float markStripBottom;
         std::set<Mark*, MarkCompare> marks;
+        Mark *markBeingDragged;
         Mark *getMarkAtDisplayX(int x);
         Mark *insertMark(int position);
         void deleteMark(Mark *mark);
+        void updateMarkPosition(Mark *mark, int position);
 
         bool drawSelection;
         float selectionStripTop;

@@ -18,6 +18,8 @@ void ofApp::setup() {
     playing = false;
     playMode = PLAYMODE_PLAY_TO_END;
 
+    markBeingDragged = nullptr;
+
     // Set up audio
     // FIXME: need to update channels and samplerate when soundfile is loaded
     bufferSize = 512;
@@ -493,8 +495,17 @@ void ofApp::mouseMoved(int x, int y ) {
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
     if (button == 0) {
+
+        // Left click on mark strip
         if (y >= markStripTop && y <= markStripBottom) {
-            insertMark(getSampleIndexFromDisplayX(x));
+            Mark *mark = getMarkAtDisplayX(x);
+            if (mark == nullptr) {
+                insertMark(getSampleIndexFromDisplayX(x));
+            } else {
+                markBeingDragged = mark;
+            }
+
+        // Left click on selection strip
         } else if (y >= selectionStripTop && y <= selectionStripBottom) {
             if (x > selectionStartX - selectionHandleRadius &&
                     x < selectionStartX + selectionHandleRadius) {
@@ -509,6 +520,8 @@ void ofApp::mousePressed(int x, int y, int button) {
                 selectionStart = getSampleIndexFromDisplayX(x - 100);
                 selectionEnd = getSampleIndexFromDisplayX(x + 100);
             }
+
+        // Left click on visualization
         } else if (y >= vizTop && y <= vizBottom) {
             draggingViz = true;
             vizDragStartX = x;
@@ -539,6 +552,8 @@ void ofApp::mouseDragged(int x, int y, int button) {
         selectionEnd = getSampleIndexFromDisplayX(x);
     } else if (draggingViz) {
         playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
+    } else if (markBeingDragged != nullptr) {
+        updateMarkPosition(markBeingDragged, getSampleIndexFromDisplayX(x));
     }
 }
 
@@ -552,6 +567,7 @@ void ofApp::mouseReleased(int x, int y, int button) {
     }
     draggingSelectionStart = false;
     draggingSelectionEnd = false;
+    markBeingDragged = nullptr;
 }
 
 //--------------------------------------------------------------
@@ -701,4 +717,12 @@ Mark *ofApp::insertMark(int position) {
 void ofApp::deleteMark(Mark *mark) {
     marks.erase(mark);
     delete mark;
+}
+
+// Because marks is an ordered set, and the key for ordering is the position,
+// the set needs to be updated when a mark's position changes.
+void ofApp::updateMarkPosition(Mark *mark, int position) {
+    marks.erase(mark);
+    mark->position = position;
+    marks.insert(mark);
 }
