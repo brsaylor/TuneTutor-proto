@@ -134,6 +134,7 @@ void ofApp::setup() {
     mainColor.set(128);
     playLineColor.set(0, 255, 0);
     markLineColor.set(60, 160, 70);
+    pitchLineColor.set(108, 108, 255, 128);
 
     vizTop = selectionStripBottom + 1;
     vizHeight = 240;
@@ -343,6 +344,7 @@ void ofApp::draw() {
 
     // Draw visualization area
     drawVisualization();
+    drawPitchLines();
 
     // Draw playhead line
     ofSetColor(playLineColor);
@@ -417,6 +419,16 @@ void ofApp::drawVisualization() {
     ofVertex(width + padding, top + height);
     ofVertex(padding, top + height);
     ofEndShape();
+}
+
+void ofApp::drawPitchLines() {
+    float y;
+    ofSetColor(pitchLineColor);
+    for (float pitch = minPitch; pitch < maxPitch; pitch++) {
+        y = ((pitch - minPitch) / (maxPitch - minPitch) * -1 + 1)
+            * vizHeight + vizTop;
+        ofLine(padding, y, ofGetWidth() - padding, y);
+    }
 }
 
 //--------------------------------------------------------------

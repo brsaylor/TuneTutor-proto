@@ -40,6 +40,7 @@ class ofApp : public ofBaseApp {
         void setFilePath(std::string path);
 
         void drawVisualization();
+        void drawPitchLines();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -112,6 +113,7 @@ class ofApp : public ofBaseApp {
         ofColor mainColor;
         ofColor playLineColor;
         ofColor markLineColor;
+        ofColor pitchLineColor;
 
         float vizTop;
         float vizHeight;
