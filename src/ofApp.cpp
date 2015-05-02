@@ -753,6 +753,9 @@ void ofApp::loadSettings() {
                 ->label = xml.getValue("label", 0);
             xml.popTag();
         }
+        xml.popTag();
+        selectionStart = xml.getValue("selectionStart", -1);
+        selectionEnd = xml.getValue("selectionEnd", -1);
     }
 }
 
@@ -779,6 +782,9 @@ void ofApp::saveSettings() {
         xml.popTag();
         i++;
     }
+    xml.popTag();
+    xml.setValue("selectionStart", selectionStart);
+    xml.setValue("selectionEnd", selectionEnd);
     xml.save(path + "/marks.xml");
 }
 
