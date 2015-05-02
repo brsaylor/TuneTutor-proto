@@ -57,8 +57,8 @@ void ofApp::setup() {
      ****************************/
     
     // These are not used by aubio, just for postprocessing detected pitches
-    minPitch = 35.; // G below middle C
-    maxPitch = 86.; // high D
+    minPitch = pitchRangeMin;
+    maxPitch = pitchRangeMax;
 
     // Set up pitch detection
     pdBufSize = 2048;
@@ -115,7 +115,11 @@ void ofApp::setup() {
     topGui->addSpacer(padding, 0);
 
     topGui->addSlider("Playback Delay", 0.0, 2.0, &playbackDelay);
-    topGui->addSlider("Zoom", 0.25, 4.0, &zoom);
+    zoomSlider = topGui->addSlider("Zoom", 0.25, 4.0, &zoom);
+    topGui->setWidgetPosition(OFX_UI_WIDGET_POSITION_DOWN);
+    pitchRangeSlider = topGui->addRangeSlider("Pitch Range",
+            pitchRangeMin, pitchRangeMax, &minPitch, &maxPitch);
+    pitchRangeSlider->getRect()->setX(zoomSlider->getRect()->getX());
 
     topGui->autoSizeToFitWidgets();
     ofAddListener(topGui->newGUIEvent, this, &ofApp::guiEvent);
@@ -457,6 +461,12 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     } else if (e.widget == (ofxUIWidget *) transposeSlider
             || e.widget == (ofxUIWidget *) tuningSlider) {
         stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
+    } else if (e.widget == (ofxUIWidget *) pitchRangeSlider) {
+        // There is no integer range slider, so round off the values here
+        minPitch = (int) minPitch;
+        maxPitch = (int) maxPitch;
+        pitchRangeSlider->setValueLow(minPitch);
+        pitchRangeSlider->setValueHigh(maxPitch);
     }
 }
 

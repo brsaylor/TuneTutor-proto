@@ -70,6 +70,8 @@ class ofApp : public ofBaseApp {
         const float markWidth = 16;
         const float markHeight = 12;
         const int selectionHandleRadius = 8;
+        const float pitchRangeMin = 35; // G below middle C
+        const float pitchRangeMax = 86; // high D
 
         std::string filePath;
         std::string fileName;
@@ -135,6 +137,8 @@ class ofApp : public ofBaseApp {
         ofxUIImageButton *playButton;
         ofxUIRadio *playModeRadio;
         std::vector<ofxUIToggle *> playModeToggles;
+        ofxUISlider *zoomSlider;
+        ofxUIRangeSlider *pitchRangeSlider;
         ofxUIIntSlider *speedSlider;
         ofxUIIntSlider *transposeSlider;
         ofxUIIntSlider *tuningSlider;
