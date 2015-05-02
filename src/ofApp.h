@@ -49,6 +49,8 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
         void audioOut(float* output, int bufferSize, int nChannels);
+        void exit();
+
         ofSoundStream soundStream;
 		
         ofxUICanvas *topGui;   	
@@ -65,6 +67,8 @@ class ofApp : public ofBaseApp {
         const float markWidth = 16;
         const float markHeight = 12;
         const int selectionHandleRadius = 8;
+
+        std::string fileName;
 
         float playbackDelay;
         float zoom;
@@ -170,4 +174,8 @@ class ofApp : public ofBaseApp {
         int samplesPerPixel;
         int pxPerPitchValue;
         int pitchValuesToDraw;
+
+        std::string getSettingsPath();
+        void loadSettings();
+        void saveSettings();
 };

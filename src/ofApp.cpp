@@ -1,7 +1,11 @@
 #include <algorithm>
+#include <cstdlib>
+
+#include "ofxXmlSettings.h"
 
 #include "ofApp.h"
 #include "soundfile.h"
+#include "util.h"
 
 //--------------------------------------------------------------
 void ofApp::setup() {
@@ -10,6 +14,7 @@ void ofApp::setup() {
     ofSetFrameRate(60);
 
     // Initialize state variables
+    fileName = "";
     playbackDelay = 0.0;
     zoom = 1.0;
     speed = 100;
@@ -67,7 +72,6 @@ void ofApp::setup() {
     // pitch visualization
     samplesPerPixel = 50;
     pxPerPitchValue = pdHopSize / samplesPerPixel;
-    ofLog() << pxPerPitchValue;
     pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
 
     /*********************************
@@ -422,6 +426,7 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
             ofLog() << openFileResult.getPath();
             bool ok = soundFile.load(openFileResult.getPath());
             if (ok) {
+                fileName = openFileResult.getName();
                 sampleRate = soundFile.getSampleRate();
                 channels = soundFile.getChannels();
                 inputSamples = soundFile.getSamples();
@@ -440,6 +445,8 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
                 ((ofxUITextInput *) (metadataTable->getWidget("album")))
                     ->setTextString(metadata.album);
 
+                loadSettings();
+
                 detectPitches();
             } else {
                 ofLogError() << "Error opening sound file";
@@ -455,12 +462,12 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
         playMode = PLAYMODE_LOOP_SELECTION;
     } else if (e.widget == playModeToggles[2]) {
         playMode = PLAYMODE_PLAY_TO_END;
-    } else if (e.widget == speedSlider) {
+    } else if (e.widget == (ofxUIWidget *) speedSlider) {
         stretcher->setTimeRatio(1.0 / (speed / 100.0));
-    } else if (e.widget == transposeSlider || e.widget == tuningSlider) {
+    } else if (e.widget == (ofxUIWidget *) transposeSlider
+            || e.widget == (ofxUIWidget *) tuningSlider) {
         stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
     }
-
 }
 
 /**
@@ -672,8 +679,6 @@ void ofApp::detectPitches() {
             spuriousHold = 0;
             pitchValues[i] = pitch;
         }
-        //ofLog() << pitchValues[i] << " ";
-
     }
 
     ofLog() << "done." << endl;
@@ -725,4 +730,58 @@ void ofApp::updateMarkPosition(Mark *mark, int position) {
     marks.erase(mark);
     mark->position = position;
     marks.insert(mark);
+}
+
+std::string ofApp::getSettingsPath() {
+    return getHomeDirectory() + "/.TuneTutor/metadata/" + fileName;
+}
+
+void ofApp::loadSettings() {
+    ofLog() << "Loading settings";
+    std::string path = getSettingsPath();
+    topGui->loadSettings(path + "/settings1.xml");
+    midGui->loadSettings(path + "/settings2.xml");
+    metadataTable->loadSettings(path + "/metadata.xml");
+
+    ofxXmlSettings xml;
+    if (xml.loadFile(path + "/marks.xml")) {
+        xml.pushTag("marks");
+        int numMarks = xml.getNumTags("mark");
+        for (int i = 0; i < numMarks; i++) {
+            xml.pushTag("mark", i);
+            insertMark(xml.getValue("position", 0))
+                ->label = xml.getValue("label", 0);
+            xml.popTag();
+        }
+    }
+}
+
+void ofApp::saveSettings() {
+    ofLog() << "Saving settings";
+    std::string path = getSettingsPath();
+    ofDirectory dir(path);
+    if (!dir.exists()) {
+        dir.create(true);
+    }
+    topGui->saveSettings(path + "/settings1.xml");
+    midGui->saveSettings(path + "/settings2.xml");
+    metadataTable->saveSettings(path + "/metadata.xml");
+
+    ofxXmlSettings xml;
+    xml.addTag("marks");
+    xml.pushTag("marks");
+    int i = 0;
+    for (Mark *mark : marks) {
+        xml.addTag("mark");
+        xml.pushTag("mark", i);
+        xml.addValue("position", mark->position);
+        xml.addValue("label", mark->label);
+        xml.popTag();
+        i++;
+    }
+    xml.save(path + "/marks.xml");
+}
+
+void ofApp::exit() {
+    saveSettings();
 }
