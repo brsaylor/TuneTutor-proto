@@ -37,6 +37,8 @@ class ofApp : public ofBaseApp {
 		void update();
 		void draw();
 
+        void setFilePath(std::string path);
+
         void drawVisualization();
 
 		void keyPressed(int key);
@@ -68,7 +70,9 @@ class ofApp : public ofBaseApp {
         const float markHeight = 12;
         const int selectionHandleRadius = 8;
 
+        std::string filePath;
         std::string fileName;
+        bool openFile();
 
         float playbackDelay;
         float zoom;

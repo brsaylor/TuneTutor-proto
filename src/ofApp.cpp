@@ -289,6 +289,10 @@ void ofApp::setup() {
     metadataTable->autoSizeToFitWidgets();
 
     ofAddListener(markTable->newGUIEvent, this, &ofApp::guiEvent);
+
+    if (filePath != "") {
+        openFile();
+    }
 }
 
 // Set common parameters of canvases
@@ -423,34 +427,8 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
 		ofFileDialogResult openFileResult = ofSystemLoadDialog(
                 "Open Sound File"); 
 		if (openFileResult.bSuccess) {
-            ofLog() << openFileResult.getPath();
-            bool ok = soundFile.load(openFileResult.getPath());
-            if (ok) {
-                fileName = openFileResult.getName();
-                sampleRate = soundFile.getSampleRate();
-                channels = soundFile.getChannels();
-                inputSamples = soundFile.getSamples();
-                
-                ofLog() << "Successfully opened file "
-                    << openFileResult.getPath()
-                    << "\nSize: " << inputSamples.size()
-                    << "\nSample rate: " << sampleRate
-                    << "\nChannels: " << channels;
-                
-                SoundFileMetadata metadata = soundFile.getMetadata();
-                ((ofxUITextInput *) (metadataTable->getWidget("title")))
-                    ->setTextString(metadata.title);
-                ((ofxUITextInput *) (metadataTable->getWidget("artist")))
-                    ->setTextString(metadata.artist);
-                ((ofxUITextInput *) (metadataTable->getWidget("album")))
-                    ->setTextString(metadata.album);
-
-                loadSettings();
-
-                detectPitches();
-            } else {
-                ofLogError() << "Error opening sound file";
-            }
+            filePath = openFileResult.getPath();
+            openFile();
 		}
     } else if (e.widget == playButton) {
         if (playButton->getValue()) {
@@ -640,6 +618,42 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         output[i * nChannels] = stretchOutBufL[i];
         output[i * nChannels + 1] = stretchOutBufR[i];
     }
+}
+
+void ofApp::setFilePath(std::string path) {
+    filePath = path;
+}
+
+/** Depends on filePath being set. */
+bool ofApp::openFile() {
+    bool ok = soundFile.load(filePath);
+    if (ok) {
+        fileName = ofFilePath::getBaseName(filePath);
+        ofLog() << "fileName = " << fileName;
+        sampleRate = soundFile.getSampleRate();
+        channels = soundFile.getChannels();
+        inputSamples = soundFile.getSamples();
+
+        ofLog() << "Successfully opened file "
+            << filePath
+            << "\nSize: " << inputSamples.size()
+            << "\nSample rate: " << sampleRate
+            << "\nChannels: " << channels;
+
+        SoundFileMetadata metadata = soundFile.getMetadata();
+        ((ofxUITextInput *) (metadataTable->getWidget("title")))
+            ->setTextString(metadata.title);
+        ((ofxUITextInput *) (metadataTable->getWidget("artist")))
+            ->setTextString(metadata.artist);
+        ((ofxUITextInput *) (metadataTable->getWidget("album")))
+            ->setTextString(metadata.album);
+
+        loadSettings();
+        detectPitches();
+    } else {
+        ofLogError() << "Error opening sound file";
+    }
+    return ok;
 }
 
 //-------------------------------------------------------
