@@ -41,6 +41,7 @@ class ofApp : public ofBaseApp {
 
         void drawVisualization();
         void drawPitchLines();
+        void drawPositionBar();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -73,6 +74,8 @@ class ofApp : public ofBaseApp {
         const float pitchRangeMin = 35; // G below middle C
         const float pitchRangeMax = 86; // high D
         const int defaultSamplesPerPixel = 50;
+        const float positionBarHeight = 8;
+        const float positionHandleRadius = 10;
 
         void setSamplesPerPixel(int count);
 
@@ -127,10 +130,11 @@ class ofApp : public ofBaseApp {
         bool draggingViz;
         int vizDragStartX;
 
-        float contextStripY;
-        float contextStripHeight;
-        float contextBoxY;
-        float contextBoxHeight;
+        float positionBarTop;
+        float positionHandleY;
+        float positionHandleX;
+        bool draggingPosition;
+        int positionDragStartX;
 
         float midGuiY;
 

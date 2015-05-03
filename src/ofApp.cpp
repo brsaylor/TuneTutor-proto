@@ -79,6 +79,7 @@ void ofApp::setup() {
     draggingSelectionStart = false;
     draggingSelectionEnd = false;
     draggingViz = false;
+    draggingPosition = false;
 
     padding = 10;
 
@@ -142,14 +143,12 @@ void ofApp::setup() {
     vizHeight = 240;
     vizBottom = vizTop + vizHeight;
 
-    contextBoxY = vizBottom + padding;
-    contextBoxHeight = 28;
-    contextStripHeight = 16;
-    contextStripY = contextBoxY + contextBoxHeight/2 - contextStripHeight/2;
+    positionBarTop = vizBottom + padding;
+    positionHandleY = positionBarTop + positionBarHeight/2;
 
     //----------------------------------------------------------
 
-    midGuiY = contextBoxY + contextBoxHeight + padding;
+    midGuiY = positionBarTop + positionBarHeight + padding;
     midGui = new ofxUICanvas(0, midGuiY, 10, 10);
     configureCanvas(midGui);
 
@@ -327,6 +326,10 @@ void ofApp::update() {
             selectionEndX = ofGetWidth() - padding;
         }
     }
+
+    positionHandleX = playheadPos / (float) (inputSamples.size() / channels)
+        * (ofGetWidth() - 2 * padding)
+        + padding;
 }
 
 //--------------------------------------------------------------
@@ -372,21 +375,7 @@ void ofApp::draw() {
         ofLine(markX, markStripBottom, markX, vizBottom);
     }
 
-    // Draw the context strip
-    ofSetColor(mainColor);
-    ofRect(
-            padding, contextStripY,
-            ofGetWidth() - 2 * padding, contextStripHeight);
-    ofFill();
-    ofRect(200, contextStripY, 120, contextStripHeight);
-
-    // Draw the context box
-    ofNoFill();
-    ofRect(180, contextBoxY, 190, contextBoxHeight);
-    ofSetColor(playLineColor);
-    ofLine(
-            180 + 190/2, contextBoxY,
-            180 + 190/2, contextBoxY + contextBoxHeight);
+    drawPositionBar();
 }
 
 void ofApp::drawVisualization() {
@@ -431,6 +420,17 @@ void ofApp::drawPitchLines() {
             * vizHeight + vizTop;
         ofLine(padding, y, ofGetWidth() - padding, y);
     }
+}
+
+void ofApp::drawPositionBar() {
+    ofSetColor(mainColor);
+    ofRect(
+            padding, positionBarTop,
+            ofGetWidth() - 2 * padding, positionBarHeight);
+
+    // Draw the position indicator handle
+    ofSetColor(markLineColor);
+    ofCircle(positionHandleX, positionHandleY, positionHandleRadius);
 }
 
 //--------------------------------------------------------------
@@ -536,6 +536,18 @@ void ofApp::mousePressed(int x, int y, int button) {
             if (playing) {
                 soundStream.stop();
             }
+
+        // Left click on position handle
+        } else if (y >= positionHandleY - positionHandleRadius
+                && y <= positionHandleY + positionHandleRadius
+                && x >= positionHandleX - positionHandleRadius
+                && x <= positionHandleX + positionHandleRadius) {
+            draggingPosition = true;
+            positionDragStartX = x;
+            prevPlayheadPos = playheadPos;
+            if (playing) {
+                soundStream.stop();
+            }
         }
 
     } else if (button == 2) {
@@ -559,6 +571,9 @@ void ofApp::mouseDragged(int x, int y, int button) {
         selectionEnd = getSampleIndexFromDisplayX(x);
     } else if (draggingViz) {
         playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
+    } else if (draggingPosition) {
+        playheadPos = prevPlayheadPos - (positionDragStartX - x) *
+            (inputSamples.size() / channels / (ofGetWidth() - 2 * padding));
     } else if (markBeingDragged != nullptr) {
         updateMarkPosition(markBeingDragged, getSampleIndexFromDisplayX(x));
     }
@@ -566,8 +581,9 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
-    if (draggingViz) {
+    if (draggingViz || draggingPosition) {
         draggingViz = false;
+        draggingPosition = false;
         if (playing) {
             soundStream.start();
         }
