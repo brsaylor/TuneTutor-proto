@@ -73,11 +73,11 @@ class ofApp : public ofBaseApp {
         const int selectionHandleRadius = 8;
         const float pitchRangeMin = 35; // G below middle C
         const float pitchRangeMax = 86; // high D
-        const int defaultSamplesPerPixel = 50;
+        const float defaultSamplesPerPixel = 100;
         const float positionBarHeight = 8;
         const float positionHandleRadius = 10;
 
-        void setSamplesPerPixel(int count);
+        void setSamplesPerPixel(float ratio);
 
         std::string filePath;
         std::string fileName;
@@ -188,8 +188,8 @@ class ofApp : public ofBaseApp {
         float maxPitch;
 
         // Pitch visualization
-        int samplesPerPixel;
-        int pxPerPitchValue;
+        float samplesPerPixel;
+        float pxPerPitchValue;
         int pitchValuesToDraw;
 
         std::string getSettingsPath();

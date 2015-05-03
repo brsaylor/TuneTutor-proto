@@ -457,7 +457,7 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     } else if (e.widget == (ofxUIWidget *) speedSlider) {
         stretcher->setTimeRatio(1.0 / (speed / 100.0));
     } else if (e.widget == (ofxUIWidget *) zoomSlider) {
-        setSamplesPerPixel((int) (defaultSamplesPerPixel / zoom));
+        setSamplesPerPixel(defaultSamplesPerPixel / zoom);
     } else if (e.widget == (ofxUIWidget *) transposeSlider
             || e.widget == (ofxUIWidget *) tuningSlider) {
         stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
@@ -737,8 +737,7 @@ void ofApp::detectPitches() {
 }
 
 float ofApp::getDisplayXFromSampleIndex(int sampleIndex) {
-   return ofGetWidth() / 2 + (sampleIndex - playheadPos) /
-       (float) samplesPerPixel;
+   return ofGetWidth() / 2 + (sampleIndex - playheadPos) / samplesPerPixel;
 }
 
 int ofApp::getSampleIndexFromDisplayX(float displayX) {
@@ -840,8 +839,8 @@ void ofApp::saveSettings() {
     xml.save(path + "/marks.xml");
 }
 
-void ofApp::setSamplesPerPixel(int count) {
-    samplesPerPixel = count;
+void ofApp::setSamplesPerPixel(float ratio) {
+    samplesPerPixel = ratio;
     pxPerPitchValue = pdHopSize / samplesPerPixel;
     pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
 }
