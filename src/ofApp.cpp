@@ -403,7 +403,8 @@ void ofApp::drawVisualization() {
            pitch = pitchValues[pitchIndex];
         }
         float x = i * pxPerPitchValue + padding;
-        float y = ((pitch + transpose - minPitch) / (maxPitch - minPitch) * -1 + 1) * height + top;
+        float y = ((pitch + transpose + tuning / 100.0 - minPitch)
+                / (maxPitch - minPitch) * -1 + 1) * height + top;
             
         ofVertex(x, y);
     }
