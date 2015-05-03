@@ -70,9 +70,7 @@ void ofApp::setup() {
     pdOutBuf = new_fvec(1);
 
     // pitch visualization
-    samplesPerPixel = 50;
-    pxPerPitchValue = pdHopSize / samplesPerPixel;
-    pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
+    setSamplesPerPixel(defaultSamplesPerPixel);
 
     /*********************************
      * Set up GUI
@@ -458,6 +456,8 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
         playMode = PLAYMODE_PLAY_TO_END;
     } else if (e.widget == (ofxUIWidget *) speedSlider) {
         stretcher->setTimeRatio(1.0 / (speed / 100.0));
+    } else if (e.widget == (ofxUIWidget *) zoomSlider) {
+        setSamplesPerPixel((int) (defaultSamplesPerPixel / zoom));
     } else if (e.widget == (ofxUIWidget *) transposeSlider
             || e.widget == (ofxUIWidget *) tuningSlider) {
         stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
@@ -822,6 +822,12 @@ void ofApp::saveSettings() {
     xml.setValue("selectionStart", selectionStart);
     xml.setValue("selectionEnd", selectionEnd);
     xml.save(path + "/marks.xml");
+}
+
+void ofApp::setSamplesPerPixel(int count) {
+    samplesPerPixel = count;
+    pxPerPitchValue = pdHopSize / samplesPerPixel;
+    pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
 }
 
 void ofApp::exit() {

@@ -72,6 +72,9 @@ class ofApp : public ofBaseApp {
         const int selectionHandleRadius = 8;
         const float pitchRangeMin = 35; // G below middle C
         const float pitchRangeMax = 86; // high D
+        const int defaultSamplesPerPixel = 50;
+
+        void setSamplesPerPixel(int count);
 
         std::string filePath;
         std::string fileName;
