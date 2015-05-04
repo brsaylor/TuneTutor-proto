@@ -198,7 +198,7 @@ void ofApp::setup() {
             ofGetWidth() / 2, ofGetHeight() - markTableY - padding);
     configureCanvas(markTable);
     markTable->setScrollableDirections(false, true);
-
+    lastMarkPositionButton = nullptr;
 
     //-------------------------------------------------------
     
@@ -266,41 +266,6 @@ void ofApp::configureCanvas(ofxUICanvas *canvas) {
     canvas->setFontSize(OFX_UI_FONT_LARGE, 12);
     canvas->setFontSize(OFX_UI_FONT_MEDIUM, 8);           
     canvas->setFontSize(OFX_UI_FONT_SMALL, 8);
-}
-
-void ofApp::populateMarkTable() {
-    Mark *prevMark = nullptr;
-    for (Mark *mark : marks) {
-        mark->positionButton =  new ofxUILabelButton(
-                formatTime(mark->position), false);
-        if (prevMark == nullptr) {
-            markTable->addWidgetPosition(mark->positionButton,
-                    OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        } else {
-            markTable->addWidgetSouthOf(mark->positionButton,
-                    formatTime(prevMark->position), false);
-        }
-
-        mark->selectStartToggle = new ofxUILabelToggle(
-                "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
-        markTable->addWidgetPosition(mark->selectStartToggle,
-                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        mark->selectStartToggle->getRect()->setX(100);
-
-        mark->selectEndToggle = new ofxUILabelToggle(
-                "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
-        markTable->addWidgetPosition(mark->selectEndToggle,
-                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        mark->selectEndToggle->getRect()->setX(200);
-
-        mark->labelInput = new ofxUITextInput("", mark->label, 100, 0, 0, 0);
-        markTable->addWidgetPosition(mark->labelInput,
-                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        mark->labelInput->getRect()->setX(300);
-
-        prevMark = mark;
-    }
-    markTable->autoSizeToFitWidgets();
 }
 
 //--------------------------------------------------------------
@@ -761,11 +726,41 @@ Mark *ofApp::getMarkAtDisplayX(int x) {
     return locatedMark;
 }
 
-Mark *ofApp::insertMark(int position) {
+Mark *ofApp::insertMark(int position, std::string label) {
     Mark *mark = new Mark();
     mark->position = position;
-    mark->label = "";
+    mark->label = label;
+
+    // Append a row of widgets to the mark table
+    mark->positionButton =  new ofxUILabelButton(
+            formatTime(mark->position), false);
+    if (lastMarkPositionButton == nullptr) {
+        markTable->addWidgetPosition(mark->positionButton,
+                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+    } else {
+        markTable->addWidgetSouthOf(mark->positionButton,
+                lastMarkPositionButton->getName(), false);
+    }
+    lastMarkPositionButton = mark->positionButton;
+    mark->selectStartToggle = new ofxUILabelToggle(
+            "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
+    markTable->addWidgetPosition(mark->selectStartToggle,
+            OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+    mark->selectStartToggle->getRect()->setX(100);
+
+    mark->selectEndToggle = new ofxUILabelToggle(
+            "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
+    markTable->addWidgetPosition(mark->selectEndToggle,
+            OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+    mark->selectEndToggle->getRect()->setX(200);
+
+    mark->labelInput = new ofxUITextInput("", mark->label, 100, 0, 0, 0);
+    markTable->addWidgetPosition(mark->labelInput,
+            OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+    mark->labelInput->getRect()->setX(300);
+
     marks.insert(mark);
+
     return mark;
 }
 
@@ -799,14 +794,12 @@ void ofApp::loadSettings() {
         int numMarks = xml.getNumTags("mark");
         for (int i = 0; i < numMarks; i++) {
             xml.pushTag("mark", i);
-            insertMark(xml.getValue("position", 0))
-                ->label = xml.getValue("label", 0);
+            insertMark(xml.getValue("position", 0), xml.getValue("label", ""));
             xml.popTag();
         }
         xml.popTag();
         selectionStart = xml.getValue("selectionStart", -1);
         selectionEnd = xml.getValue("selectionEnd", -1);
-        populateMarkTable();
     }
 }
 

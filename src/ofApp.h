@@ -107,9 +107,10 @@ class ofApp : public ofBaseApp {
         std::set<Mark*, MarkCompare> marks;
         Mark *markBeingDragged;
         Mark *getMarkAtDisplayX(int x);
-        Mark *insertMark(int position);
+        Mark *insertMark(int position, std::string label = "");
         void deleteMark(Mark *mark);
         void updateMarkPosition(Mark *mark, int position);
+        ofxUILabelButton *lastMarkPositionButton;
 
         bool drawSelection;
         float selectionStripTop;
@@ -142,8 +143,6 @@ class ofApp : public ofBaseApp {
         int positionDragStartX;
 
         float midGuiY;
-
-        void populateMarkTable();
 
         void configureCanvas(ofxUICanvas *canvas);
 
