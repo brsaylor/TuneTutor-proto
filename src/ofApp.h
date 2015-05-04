@@ -67,6 +67,7 @@ class ofApp : public ofBaseApp {
         ofxUICanvas *metadataTable;
         ofxUIScrollableCanvas *markTable;
         void guiEvent(ofxUIEventArgs &e);
+        void guiEventMarkTable(ofxUIEventArgs &e);
 
         ofImage pauseImage;
         ofImage playImage;
@@ -156,6 +157,8 @@ class ofApp : public ofBaseApp {
         ofxUIIntSlider *transposeSlider;
         ofxUIIntSlider *tuningSlider;
         ofxUILabelButton *addMarkButton;
+
+        std::set<ofxUITextInput *> metadataInputs;
 
         // Audio setup
         bool playing;

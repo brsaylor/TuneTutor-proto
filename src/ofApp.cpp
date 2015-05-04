@@ -199,6 +199,7 @@ void ofApp::setup() {
     configureCanvas(markTable);
     markTable->setScrollableDirections(false, true);
     lastMarkPositionButton = nullptr;
+    ofAddListener(markTable->newGUIEvent, this, &ofApp::guiEventMarkTable);
 
     //-------------------------------------------------------
     
@@ -218,42 +219,48 @@ void ofApp::setup() {
 
     label = metadataTable->addLabel("titleLabel", "Title", OFX_UI_FONT_MEDIUM);
     textInput = new ofxUITextInput("title", "test title", 400, 0, 0, 0);
+    metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "titleLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("artistLabel", "Artist", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "titleLabel", false);
     textInput = new ofxUITextInput("artist", "test artist", 400, 0, 0, 0);
+    metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "artistLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("albumLabel", "Album", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "artistLabel", false);
     textInput = new ofxUITextInput("album", "test album", 400, 0, 0, 0);
+    metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "albumLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("rhythmLabel", "Rhythm", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "albumLabel", false);
     textInput = new ofxUITextInput("rhythm", "test rhythm", 200, 0, 0, 0);
+    metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "rhythmLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("keyLabel", "Key", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "rhythmLabel", false);
     textInput = new ofxUITextInput("key", "test key", 200, 0, 0, 0);
+    metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "keyLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("tempoLabel", "Tempo", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "keyLabel", false);
     textInput = new ofxUITextInput("temp", "test tempo", 200, 0, 0, 0);
+    metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "tempoLabel", false);
     textInput->getRect()->setX(150);
 
     metadataTable->autoSizeToFitWidgets();
 
-    ofAddListener(markTable->newGUIEvent, this, &ofApp::guiEvent);
+    ofAddListener(metadataTable->newGUIEvent, this, &ofApp::guiEvent);
 
     if (filePath != "") {
         openFile();
@@ -431,6 +438,48 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
         maxPitch = (int) maxPitch;
         pitchRangeSlider->setValueLow(minPitch);
         pitchRangeSlider->setValueHigh(maxPitch);
+    } else if (e.widget->getKind() == OFX_UI_WIDGET_TEXTINPUT) {
+        ofxUITextInput *input = (ofxUITextInput *) e.widget;
+        if (input->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER) {
+        } else if (input->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_FOCUS) {
+            ofLog() << "metadata table input focused";
+            // Need to manually unfocus the mark text inputs, because they
+            // are in a different canvas and don't know that this one got focus.
+            for (Mark *mark : marks) {
+                mark->labelInput->setFocus(false);
+            }
+        } else if(input->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_UNFOCUS) {
+        }
+    }
+}
+
+void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
+    if (e.widget->getKind() == OFX_UI_WIDGET_TEXTINPUT) {
+        ofxUITextInput *input = (ofxUITextInput *) e.widget;
+        if (input->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER) {
+        } else if (input->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_FOCUS) {
+            ofLog() << "mark table input focused";
+            // Need to manually unfocus the metadata text inputs, because they
+            // are in a different canvas and don't know that this one got focus.
+            for (ofxUITextInput *otherInput : metadataInputs) {
+                otherInput->setFocus(false);
+            }
+            // Also, manually unfocus the other mark text inputs.
+            // TODO: Figure out why they aren't automatically unfocused
+            for (Mark *mark : marks) {
+                if (mark->labelInput != input) {
+                    mark->labelInput->setFocus(false);
+                }
+            }
+        } else if(input->getInputTriggerType() == OFX_UI_TEXTINPUT_ON_UNFOCUS) {
+            // Find the mark associated with this label and update the label
+            for (Mark *mark : marks) {
+                if (mark->labelInput == input) {
+                    mark->label = input->getTextString();
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -822,6 +871,11 @@ void ofApp::saveSettings() {
         xml.addTag("mark");
         xml.pushTag("mark", i);
         xml.addValue("position", mark->position);
+
+        // Workaround for when text input has been typed into but hasn't been
+        // unfocused
+        mark->label = mark->labelInput->getTextString();
+
         xml.addValue("label", mark->label);
         xml.popTag();
         i++;
