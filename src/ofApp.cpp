@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdlib>
+#include <cstdio>
 
 #include "ofxXmlSettings.h"
 
@@ -198,44 +199,6 @@ void ofApp::setup() {
     configureCanvas(markTable);
     markTable->setScrollableDirections(false, true);
 
-    ofxUILabelButton *prevMarkButton = NULL;
-    ofxUILabelButton *markButton = NULL;
-    ofxUILabelToggle *selectStartToggle = NULL;
-    ofxUILabelToggle *selectEndToggle = NULL;
-    ofxUITextInput *markDescriptionInput = NULL;
-    for (int i = 0; i < 15; i++) {
-        markButton = new ofxUILabelButton(
-                std::string("0:0") + std::to_string((i)), false);
-        if (prevMarkButton == NULL) {
-            markTable->addWidgetPosition(markButton,
-                    OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        } else {
-            markTable->addWidgetSouthOf(markButton,
-                    std::string("0:0") + std::to_string((i-1)), false);
-        }
-        prevMarkButton = markButton;
-
-        selectStartToggle = new ofxUILabelToggle(
-                "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
-        markTable->addWidgetPosition(selectStartToggle,
-                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        selectStartToggle->getRect()->setX(100);
-
-        selectEndToggle = new ofxUILabelToggle(
-                "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
-        markTable->addWidgetPosition(selectEndToggle,
-                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        selectEndToggle->getRect()->setX(200);
-
-        markDescriptionInput = new ofxUITextInput("",
-                std::string("Mark ") + std::to_string((i)),
-                100, 0, 0, 0);
-        markTable->addWidgetPosition(markDescriptionInput,
-                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
-        markDescriptionInput->getRect()->setX(300);
-
-    }
-    markTable->autoSizeToFitWidgets();
 
     //-------------------------------------------------------
     
@@ -303,6 +266,41 @@ void ofApp::configureCanvas(ofxUICanvas *canvas) {
     canvas->setFontSize(OFX_UI_FONT_LARGE, 12);
     canvas->setFontSize(OFX_UI_FONT_MEDIUM, 8);           
     canvas->setFontSize(OFX_UI_FONT_SMALL, 8);
+}
+
+void ofApp::populateMarkTable() {
+    Mark *prevMark = nullptr;
+    for (Mark *mark : marks) {
+        mark->positionButton =  new ofxUILabelButton(
+                formatTime(mark->position), false);
+        if (prevMark == nullptr) {
+            markTable->addWidgetPosition(mark->positionButton,
+                    OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+        } else {
+            markTable->addWidgetSouthOf(mark->positionButton,
+                    formatTime(prevMark->position), false);
+        }
+
+        mark->selectStartToggle = new ofxUILabelToggle(
+                "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
+        markTable->addWidgetPosition(mark->selectStartToggle,
+                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+        mark->selectStartToggle->getRect()->setX(100);
+
+        mark->selectEndToggle = new ofxUILabelToggle(
+                "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
+        markTable->addWidgetPosition(mark->selectEndToggle,
+                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+        mark->selectEndToggle->getRect()->setX(200);
+
+        mark->labelInput = new ofxUITextInput("", mark->label, 100, 0, 0, 0);
+        markTable->addWidgetPosition(mark->labelInput,
+                OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
+        mark->labelInput->getRect()->setX(300);
+
+        prevMark = mark;
+    }
+    markTable->autoSizeToFitWidgets();
 }
 
 //--------------------------------------------------------------
@@ -808,6 +806,7 @@ void ofApp::loadSettings() {
         xml.popTag();
         selectionStart = xml.getValue("selectionStart", -1);
         selectionEnd = xml.getValue("selectionEnd", -1);
+        populateMarkTable();
     }
 }
 
@@ -844,6 +843,17 @@ void ofApp::setSamplesPerPixel(float ratio) {
     samplesPerPixel = ratio;
     pxPerPitchValue = pdHopSize / samplesPerPixel;
     pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
+}
+
+std::string ofApp::formatTime(int sample) {
+    int milliseconds = sample / (float) sampleRate * 1000;
+    int seconds = milliseconds / 1000;
+    milliseconds -= seconds * 1000;
+    int minutes = seconds / 60;
+    seconds -= minutes * 60;
+    char buffer[10];
+    snprintf(buffer, 10, "%d:%02d.%03d", minutes, seconds, milliseconds);
+    return std::string(buffer);
 }
 
 void ofApp::exit() {

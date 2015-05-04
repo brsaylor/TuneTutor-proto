@@ -22,6 +22,11 @@ struct Mark {
     int position;
 
     std::string label;
+
+    ofxUILabelButton *positionButton;
+    ofxUILabelToggle *selectStartToggle;
+    ofxUILabelToggle *selectEndToggle;
+    ofxUITextInput *labelInput;
 };
 
 struct MarkCompare {
@@ -138,6 +143,8 @@ class ofApp : public ofBaseApp {
 
         float midGuiY;
 
+        void populateMarkTable();
+
         void configureCanvas(ofxUICanvas *canvas);
 
         ofxUILabelButton *openFileButton;
@@ -195,4 +202,6 @@ class ofApp : public ofBaseApp {
         std::string getSettingsPath();
         void loadSettings();
         void saveSettings();
+
+        std::string formatTime(int sample);
 };
