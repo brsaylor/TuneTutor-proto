@@ -590,9 +590,15 @@ void ofApp::mouseDragged(int x, int y, int button) {
         selectionEnd = getSampleIndexFromDisplayX(x);
     } else if (draggingViz) {
         playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
+        if (playheadPos * channels >= inputSamples.size()) {
+            playheadPos = inputSamples.size() / channels;
+        }
     } else if (draggingPosition) {
         playheadPos = prevPlayheadPos - (positionDragStartX - x) *
             (inputSamples.size() / channels / (ofGetWidth() - 2 * padding));
+        if (playheadPos * channels >= inputSamples.size()) {
+            playheadPos = inputSamples.size() / channels;
+        }
     } else if (markBeingDragged != nullptr) {
         updateMarkPosition(markBeingDragged, getSampleIndexFromDisplayX(x));
     }
@@ -629,14 +635,11 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 //--------------------------------------------------------------
 void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
-    /*
-     * This code just plays the sound
-    for (int i = 0; i < bufferSize; i++){
-        output[i*nChannels] = inputSamples[playheadPos*nChannels + i*nChannels];
-        output[i*nChannels + 1] = inputSamples[playheadPos*nChannels + i*nChannels + 1];
+
+    if (playheadPos * channels >= inputSamples.size()) {
+        playheadPos = inputSamples.size() / channels;
+        playPause();
     }
-    playheadPos += bufferSize;
-    */
 
     // While there are fewer than bufferSize output samples available, feed more
     // input samples into the timestretcher
@@ -645,9 +648,17 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
     while (stretcher->available() < bufferSize) {
     
         // Deinterleave into the stretcher input buffers
-        for (int i = 0; i < bufferSize; i++) {
-            stretchInBufL[i] = inputSamples[(playheadPos + i) * channels];
-            stretchInBufR[i] = inputSamples[(playheadPos + i) * channels + 1];
+        int i, j;
+        for (i = 0, j = (playheadPos + i) * channels;
+                i < bufferSize && j < inputSamples.size();
+                i++, j += channels) {
+            stretchInBufL[i] = inputSamples[j];
+            stretchInBufR[i] = inputSamples[j + 1];
+        }
+        while (i < bufferSize) {
+            stretchInBufL[i] = 0;
+            stretchInBufR[i] = 0;
+            i++;
         }
 
         // FIXME: check for end of sound
