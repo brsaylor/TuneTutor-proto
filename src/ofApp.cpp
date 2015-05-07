@@ -139,6 +139,7 @@ void ofApp::setup() {
     playLineColor.set(0, 255, 0);
     markLineColor.set(60, 160, 70);
     pitchLineColor.set(108, 108, 255, 128);
+    pitchLineHighlightColor.set(108, 108, 255, 200);
 
     vizTop = selectionStripBottom + 1;
     vizHeight = 240;
@@ -389,6 +390,11 @@ void ofApp::drawPitchLines() {
     for (float pitch = minPitch; pitch < maxPitch; pitch++) {
         y = ((pitch - minPitch) / (maxPitch - minPitch) * -1 + 1)
             * vizHeight + vizTop;
+        if (highlightPitches.count(pitch)) {
+            ofSetColor(pitchLineHighlightColor);
+        } else {
+            ofSetColor(pitchLineColor);
+        }
         ofLine(padding, y, ofGetWidth() - padding, y);
     }
 }
