@@ -591,13 +591,17 @@ void ofApp::mouseDragged(int x, int y, int button) {
         selectionEnd = getSampleIndexFromDisplayX(x);
     } else if (draggingViz) {
         playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
-        if (playheadPos * channels >= inputSamples.size()) {
+        if (playheadPos <= 0) {
+            playheadPos = 0;
+        } else if (playheadPos * channels >= inputSamples.size()) {
             playheadPos = inputSamples.size() / channels;
         }
     } else if (draggingPosition) {
         playheadPos = prevPlayheadPos - (positionDragStartX - x) *
             (inputSamples.size() / channels / (ofGetWidth() - 2 * padding));
-        if (playheadPos * channels >= inputSamples.size()) {
+        if (playheadPos <= 0) {
+            playheadPos = 0;
+        } else if (playheadPos * channels >= inputSamples.size()) {
             playheadPos = inputSamples.size() / channels;
         }
     } else if (markBeingDragged != nullptr) {
