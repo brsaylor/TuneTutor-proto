@@ -364,14 +364,15 @@ void ofApp::drawVisualization() {
     for (int i = 0; i < pitchValuesToDraw; i++) {
         // subtract pitchValuesToDraw/2 to put the playhead position in the middle
         int pitchIndex = (playheadPos / pdHopSize + i) - pitchValuesToDraw/2;
-        if (pitchIndex > pitchValues.size()) {
+        if (pitchIndex > (int) pitchValues.size()) {
             break;
         }
         float pitch;
         if (pitchIndex < 0) {
-           pitch = 0.;
+           pitch = minPitch;
         } else {
-           pitch = pitchValues[pitchIndex];
+           pitch = max(pitchValues[pitchIndex], minPitch);
+           pitch = min(pitch, maxPitch);
         }
         float x = i * pxPerPitchValue + padding;
         float y = ((pitch + transpose + tuning / 100.0 - minPitch)
@@ -379,8 +380,8 @@ void ofApp::drawVisualization() {
             
         ofVertex(x, y);
     }
-    ofVertex(width + padding, top + height);
-    ofVertex(padding, top + height);
+    ofVertex(width + padding, top + height); // bottom right corner
+    ofVertex(padding, top + height); // bottom left corner
     ofEndShape();
 }
 
