@@ -32,16 +32,16 @@ class SoundFile {
          */
         bool load(std::string path);
 
-        int getSampleRate();
-        int getChannels();
-        SoundFileMetadata getMetadata();
+        int getSampleRate() const;
+        int getChannels() const;
+        SoundFileMetadata getMetadata() const;
 
         /**
          * Get the sample data of the loaded file. The data is a vector of
          * floats in the range -1.0 to 1.0, and the channels are interleaved.
          * @return the sample data of the loaded file
          */
-        std::vector<float> getSamples();
+        std::vector<float> getSamples() const;
 
     private:
         int sampleRate;

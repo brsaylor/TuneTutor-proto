@@ -17,19 +17,19 @@ bool SoundFile::load(std::string path) {
     return loadMp3(path);
 }
 
-int SoundFile::getSampleRate() {
+int SoundFile::getSampleRate() const {
     return sampleRate;
 }
 
-int SoundFile::getChannels() {
+int SoundFile::getChannels() const {
     return channels;
 }
 
-std::vector<float> SoundFile::getSamples() {
+std::vector<float> SoundFile::getSamples() const {
     return samples;
 }
 
-SoundFileMetadata SoundFile::getMetadata() {
+SoundFileMetadata SoundFile::getMetadata() const {
     return metadata;
 }
 

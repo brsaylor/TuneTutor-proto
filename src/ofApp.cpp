@@ -34,24 +34,7 @@ void ofApp::setup() {
     soundStream.setup(this, channels, 0, sampleRate, bufferSize, 4);
     soundStream.stop();
 
-    // Set up time stretching
-    
-    stretchInBufL.resize(bufferSize);
-    stretchInBufR.resize(bufferSize);
-    stretchInBuf.resize(channels);
-    stretchInBuf[0] = &(stretchInBufL[0]);
-    stretchInBuf[1] = &(stretchInBufR[0]);
-
-    stretchOutBufL.resize(bufferSize);
-    stretchOutBufR.resize(bufferSize);
-    stretchOutBuf.resize(channels);
-    stretchOutBuf[0] = &(stretchOutBufL[0]);
-    stretchOutBuf[1] = &(stretchOutBufR[0]);
-    
-    stretcher = new RubberBand::RubberBandStretcher(sampleRate, channels,
-            RubberBand::RubberBandStretcher::DefaultOptions |
-            RubberBand::RubberBandStretcher::OptionProcessRealTime);
-    stretcher->setMaxProcessSize(bufferSize);
+    stretcher = nullptr;
 
     /****************************
      * Set up pitch detector
@@ -69,6 +52,7 @@ void ofApp::setup() {
     aubio_pitch_set_unit(pitchDetector, const_cast<char *>("midi"));
     pdInBuf = new_fvec(pdHopSize);
     pdOutBuf = new_fvec(1);
+    pitchesDetected = false;
 
     // pitch visualization
     setSamplesPerPixel(defaultSamplesPerPixel);
@@ -358,6 +342,10 @@ void ofApp::drawVisualization() {
     ofSetColor(96);
     ofRect(padding, top, width, height);
 
+    if (!pitchesDetected) {
+        return;
+    }
+
     ofSetColor(255);
 
     ofBeginShape();
@@ -433,12 +421,12 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     } else if (e.widget == playModeToggles[2]) {
         playMode = PLAYMODE_PLAY_TO_END;
     } else if (e.widget == (ofxUIWidget *) speedSlider) {
-        stretcher->setTimeRatio(1.0 / (speed / 100.0));
+        stretcher->setSpeed(speed / 100.0);
     } else if (e.widget == (ofxUIWidget *) zoomSlider) {
         setSamplesPerPixel(defaultSamplesPerPixel / zoom);
     } else if (e.widget == (ofxUIWidget *) transposeSlider
             || e.widget == (ofxUIWidget *) tuningSlider) {
-        stretcher->setPitchScale(pow(2.0, (transpose + tuning / 100.0) / 12.0));
+        stretcher->setPitch(transpose + tuning / 100.0);
     } else if (e.widget == (ofxUIWidget *) pitchRangeSlider) {
         // There is no integer range slider, so round off the values here
         minPitch = (int) minPitch;
@@ -590,20 +578,10 @@ void ofApp::mouseDragged(int x, int y, int button) {
     } else if (draggingSelectionEnd) {
         selectionEnd = getSampleIndexFromDisplayX(x);
     } else if (draggingViz) {
-        playheadPos = prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel;
-        if (playheadPos <= 0) {
-            playheadPos = 0;
-        } else if (playheadPos * channels >= inputSamples.size()) {
-            playheadPos = inputSamples.size() / channels;
-        }
+        seek(prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel);
     } else if (draggingPosition) {
-        playheadPos = prevPlayheadPos - (positionDragStartX - x) *
-            (inputSamples.size() / channels / (ofGetWidth() - 2 * padding));
-        if (playheadPos <= 0) {
-            playheadPos = 0;
-        } else if (playheadPos * channels >= inputSamples.size()) {
-            playheadPos = inputSamples.size() / channels;
-        }
+        seek(prevPlayheadPos - (positionDragStartX - x) *
+            (inputSamples.size() / channels / (ofGetWidth() - 2 * padding)));
     } else if (markBeingDragged != nullptr) {
         updateMarkPosition(markBeingDragged, getSampleIndexFromDisplayX(x));
     }
@@ -646,51 +624,29 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         playPause();
     }
 
-    // While there are fewer than bufferSize output samples available, feed more
-    // input samples into the timestretcher
-    // Note: buffer size of stretcher input doesn't necessarily need to be the
-    // same as the output buffer size
-    while (stretcher->available() < bufferSize) {
-    
-        // Deinterleave into the stretcher input buffers
-        int i, j;
-        for (i = 0, j = (playheadPos + i) * channels;
-                i < bufferSize && j < inputSamples.size();
-                i++, j += channels) {
-            stretchInBufL[i] = inputSamples[j];
-            stretchInBufR[i] = inputSamples[j + 1];
-        }
-        while (i < bufferSize) {
-            stretchInBufL[i] = 0;
-            stretchInBufR[i] = 0;
-            i++;
-        }
+    stretcher->getOutput(output, bufferSize);
+    playheadPos = stretcher->getPosition();
 
-        // FIXME: check for end of sound
-        
-        stretcher->process(&(stretchInBuf[0]), bufferSize, false);
-
-        playheadPos += bufferSize;
-        if (playheadPos > selectionEnd) {
-            if (playMode == PLAYMODE_LOOP_SELECTION) {
-                playheadPos = selectionStart;
-            } else if (playMode == PLAYMODE_PLAY_SELECTION) {
-                playheadPos = selectionStart;
-                playPause();
-            }
+    playheadPos += bufferSize;
+    if (playheadPos > selectionEnd) {
+        if (playMode == PLAYMODE_LOOP_SELECTION) {
+            playheadPos = selectionStart;
+        } else if (playMode == PLAYMODE_PLAY_SELECTION) {
+            playheadPos = selectionStart;
+            playPause();
         }
     }
+}
 
-    size_t samplesRetrieved = stretcher->retrieve(&(stretchOutBuf[0]), bufferSize);
-    if (samplesRetrieved != (size_t) bufferSize) {
-        ofLog() << "Retrieved " << samplesRetrieved << endl;
+void ofApp::seek(int position) {
+    if (position <= 0) {
+        playheadPos = 0;
+    } else if (position * channels >= inputSamples.size()) {
+        playheadPos = inputSamples.size() / channels;
+    } else {
+        playheadPos = position;
     }
-
-    // Interleave output from stretcher into audio output
-    for (int i = 0; i < bufferSize; i++) {
-        output[i * nChannels] = stretchOutBufL[i];
-        output[i * nChannels + 1] = stretchOutBufR[i];
-    }
+    stretcher->seek(playheadPos);
 }
 
 void ofApp::setFilePath(std::string path) {
@@ -721,6 +677,10 @@ bool ofApp::openFile() {
         ((ofxUITextInput *) (metadataTable->getWidget("album")))
             ->setTextString(metadata.album);
 
+        if (stretcher != nullptr) {
+            delete stretcher;
+        }
+        stretcher = new TuneTutor::TimeStretcher(soundFile);
         loadSettings();
         detectPitches();
     } else {
@@ -767,6 +727,8 @@ void ofApp::detectPitches() {
             pitchValues[i] = pitch;
         }
     }
+
+    pitchesDetected = true;
 
     ofLog() << "done." << endl;
 }

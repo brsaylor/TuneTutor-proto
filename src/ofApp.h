@@ -1,10 +1,10 @@
 #pragma once
 
-#include <rubberband/RubberBandStretcher.h>
 #include "ofMain.h"
 #include "ofxUI.h"
 
 #include "soundfile.h"
+#include "timestretcher.h"
 
 extern "C" {
 #include <aubio/aubio.h>
@@ -175,17 +175,10 @@ class ofApp : public ofBaseApp {
 
         int prevPlayheadPos; // Position of playhead when dragging started
         int playheadPos;
+        void seek(int position); // Set playhead position
 
         // Time stretcher
-        RubberBand::RubberBandStretcher *stretcher;
-        //
-        std::vector<float*> stretchInBuf;
-        std::vector<float> stretchInBufL;
-        std::vector<float> stretchInBufR;
-        //
-        std::vector<float*> stretchOutBuf;
-        std::vector<float> stretchOutBufL;
-        std::vector<float> stretchOutBufR;
+        TuneTutor::TimeStretcher *stretcher;
 
         // Pitch detection
         aubio_pitch_t *pitchDetector;
@@ -197,6 +190,7 @@ class ofApp : public ofBaseApp {
         void detectPitches();
         float minPitch;
         float maxPitch;
+        bool pitchesDetected;
 
         // Pitch visualization
         float samplesPerPixel;
