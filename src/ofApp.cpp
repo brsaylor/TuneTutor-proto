@@ -627,12 +627,11 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
     stretcher->getOutput(output, bufferSize);
     playheadPos = stretcher->getPosition();
 
-    playheadPos += bufferSize;
     if (playheadPos > selectionEnd) {
         if (playMode == PLAYMODE_LOOP_SELECTION) {
-            playheadPos = selectionStart;
+            seek(selectionStart);
         } else if (playMode == PLAYMODE_PLAY_SELECTION) {
-            playheadPos = selectionStart;
+            seek(selectionStart);
             playPause();
         }
     }
