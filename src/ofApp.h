@@ -71,6 +71,7 @@ class ofApp : public ofBaseApp {
 
     private:
         const std::string fontFile = "DroidSans.ttf";
+        const float padding = 6;
         const float markWidth = 16;
         const float markHeight = 12;
         const int selectionHandleRadius = 8;
@@ -98,8 +99,6 @@ class ofApp : public ofBaseApp {
         int displayEndSample;
         float getDisplayXFromSampleIndex(int sampleIndex);
         int getSampleIndexFromDisplayX(float displayX);
-
-        float padding;
 
         float markStripTop;
         float markStripBottom;

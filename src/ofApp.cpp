@@ -51,8 +51,6 @@ void ofApp::setup() {
     draggingViz = false;
     draggingPosition = false;
 
-    padding = 10;
-
     topGui = new ofxUICanvas();
     configureCanvas(topGui);
     topGui->setGlobalButtonDimension(64);
@@ -91,6 +89,7 @@ void ofApp::setup() {
     pitchRangeSlider->getRect()->setX(zoomSlider->getRect()->getX());
 
     topGui->autoSizeToFitWidgets();
+    topGui->getRect()->setWidth(ofGetWidth());
     ofAddListener(topGui->newGUIEvent, this, &ofApp::guiEvent);
 
     //----------------------------------------------------
@@ -125,14 +124,15 @@ void ofApp::setup() {
 
     midGui->setWidgetPosition(OFX_UI_WIDGET_POSITION_RIGHT);
     speedSlider = midGui->addIntSlider(
-            "Speed (%)", 10, 100, &speed, ofGetWidth()/3 - padding, 16);
+            "Speed (%)", 10, 100, &speed, ofGetWidth()/3 - padding, 24);
     transposeSlider = midGui->addIntSlider(
             "Transpose (semitones)", -12, 12, &transpose,
-            ofGetWidth()/3 - padding, 16);
+            ofGetWidth()/3 - padding, 24);
     tuningSlider = midGui->addIntSlider(
-            "Tuning (cents)", -50, 50, &tuning, ofGetWidth()/3 - padding, 16);
+            "Tuning (cents)", -50, 50, &tuning, ofGetWidth()/3 - padding, 24);
 
     midGui->autoSizeToFitWidgets();
+    midGui->getRect()->setWidth(ofGetWidth());
     ofAddListener(midGui->newGUIEvent, this, &ofApp::guiEvent);
 
     //----------------------------------------------------------
@@ -171,12 +171,17 @@ void ofApp::setup() {
     lastMarkPositionButton = nullptr;
     ofAddListener(markTable->newGUIEvent, this, &ofApp::guiEventMarkTable);
 
+    markTable->getSRect()->setWidth(ofGetWidth() / 2 - padding / 2);
+    markTable->getSRect()->setHeight(ofGetHeight() - markTableY);
+    markTableGui->getRect()->setWidth(markTable->getSRect()->getWidth());
+    markTableHeader->getRect()->setWidth(markTable->getSRect()->getWidth());
+
     //-------------------------------------------------------
     
-    float metadataTableX = markTable->getRect()->getX() +
-        markTable->getRect()->getWidth() + padding;
-    float metadataTableY = markTableHeaderY;
     metadataTable = new ofxUICanvas();
+    metadataTable->setWidgetSpacing(10);
+    float metadataTableX = ofGetWidth() / 2 + padding / 2;
+    float metadataTableY = markTableGuiY;
     ofxUIRectangle *rect = metadataTable->getRect();
     rect->setX(metadataTableX);
     rect->setY(metadataTableY);
@@ -187,48 +192,52 @@ void ofApp::setup() {
     ofxUILabel *label;
     ofxUITextInput *textInput;
 
+    label = metadataTable->addLabel("infoHeaderLabel", "Tune Information",
+            OFX_UI_FONT_LARGE);
+
     label = metadataTable->addLabel("titleLabel", "Title", OFX_UI_FONT_MEDIUM);
-    textInput = new ofxUITextInput("title", "test title", 400, 0, 0, 0);
+    textInput = new ofxUITextInput("title", "", 400, 0, 0, 0);
     metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "titleLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("artistLabel", "Artist", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "titleLabel", false);
-    textInput = new ofxUITextInput("artist", "test artist", 400, 0, 0, 0);
+    textInput = new ofxUITextInput("artist", "", 400, 0, 0, 0);
     metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "artistLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("albumLabel", "Album", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "artistLabel", false);
-    textInput = new ofxUITextInput("album", "test album", 400, 0, 0, 0);
+    textInput = new ofxUITextInput("album", "", 400, 0, 0, 0);
     metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "albumLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("rhythmLabel", "Rhythm", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "albumLabel", false);
-    textInput = new ofxUITextInput("rhythm", "test rhythm", 200, 0, 0, 0);
+    textInput = new ofxUITextInput("rhythm", "", 200, 0, 0, 0);
     metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "rhythmLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("keyLabel", "Key", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "rhythmLabel", false);
-    textInput = new ofxUITextInput("key", "test key", 200, 0, 0, 0);
+    textInput = new ofxUITextInput("key", "", 200, 0, 0, 0);
     metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "keyLabel", false);
     textInput->getRect()->setX(150);
 
     label = new ofxUILabel("tempoLabel", "Tempo", OFX_UI_FONT_MEDIUM);
     metadataTable->addWidgetSouthOf(label, "keyLabel", false);
-    textInput = new ofxUITextInput("temp", "test tempo", 200, 0, 0, 0);
+    textInput = new ofxUITextInput("temp", "", 200, 0, 0, 0);
     metadataInputs.insert(textInput);
     metadataTable->addWidgetEastOf(textInput, "tempoLabel", false);
     textInput->getRect()->setX(150);
 
     metadataTable->autoSizeToFitWidgets();
+    rect->setHeight(ofGetHeight() - metadataTableY);
 
     ofAddListener(metadataTable->newGUIEvent, this, &ofApp::guiEvent);
 
@@ -243,6 +252,7 @@ void ofApp::configureCanvas(ofxUICanvas *canvas) {
     canvas->setFontSize(OFX_UI_FONT_LARGE, 12);
     canvas->setFontSize(OFX_UI_FONT_MEDIUM, 8);           
     canvas->setFontSize(OFX_UI_FONT_SMALL, 8);
+    //canvas->setColorBack(ofColor(128));
 }
 
 //--------------------------------------------------------------
@@ -274,7 +284,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-    ofBackground(255);
+    ofBackground(190);
     ofSetColor(mainColor);
 
     ofFill();
