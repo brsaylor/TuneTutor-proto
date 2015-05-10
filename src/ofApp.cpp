@@ -418,12 +418,16 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     } else if (e.widget == playModeToggles[2]) {
         playMode = PLAYMODE_PLAY_TO_END;
     } else if (e.widget == (ofxUIWidget *) speedSlider) {
-        stretcher->setSpeed(speed / 100.0);
+        if (stretcher != nullptr) {
+            stretcher->setSpeed(speed / 100.0);
+        }
     } else if (e.widget == (ofxUIWidget *) zoomSlider) {
         setSamplesPerPixel(defaultSamplesPerPixel / zoom);
     } else if (e.widget == (ofxUIWidget *) transposeSlider
             || e.widget == (ofxUIWidget *) tuningSlider) {
-        stretcher->setPitch(transpose + tuning / 100.0);
+        if (stretcher != nullptr) {
+            stretcher->setPitch(transpose + tuning / 100.0);
+        }
     } else if (e.widget == (ofxUIWidget *) pitchRangeSlider) {
         // There is no integer range slider, so round off the values here
         minPitch = (int) minPitch;
@@ -534,7 +538,7 @@ void ofApp::mousePressed(int x, int y, int button) {
             }
 
         // Left click on visualization
-        } else if (y >= vizTop && y <= vizBottom) {
+        } else if (y >= vizTop && y <= vizBottom && stretcher != nullptr) {
             draggingViz = true;
             vizDragStartX = x;
             prevPlayheadPos = playheadPos;
@@ -546,7 +550,9 @@ void ofApp::mousePressed(int x, int y, int button) {
         } else if (y >= positionHandleY - positionHandleRadius
                 && y <= positionHandleY + positionHandleRadius
                 && x >= positionHandleX - positionHandleRadius
-                && x <= positionHandleX + positionHandleRadius) {
+                && x <= positionHandleX + positionHandleRadius
+                && stretcher != nullptr
+                ) {
             draggingPosition = true;
             positionDragStartX = x;
             prevPlayheadPos = playheadPos;
@@ -619,6 +625,10 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
     if (playheadPos * channels >= inputSamples.size()) {
         playheadPos = inputSamples.size() / channels;
         playPause();
+    }
+
+    if (stretcher == nullptr) {
+        return;
     }
 
     stretcher->getOutput(output, bufferSize);
@@ -829,6 +839,9 @@ void ofApp::saveSettings() {
 }
 
 void ofApp::setSamplesPerPixel(float ratio) {
+    if (pitchDetector == nullptr) {
+        return;
+    }
     samplesPerPixel = ratio;
     pxPerPitchValue = pitchDetector->getSampleInterval() / samplesPerPixel;
     pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
