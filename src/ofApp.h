@@ -5,10 +5,7 @@
 
 #include "soundfile.h"
 #include "timestretcher.h"
-
-extern "C" {
-#include <aubio/aubio.h>
-}
+#include "pitchdetector.h"
 
 enum PlayMode {
     PLAYMODE_PLAY_SELECTION,
@@ -18,7 +15,7 @@ enum PlayMode {
 
 struct Mark {
 
-    /** Position of the mark in samples */
+    /** Position of the mark in sample frames */
     int position;
 
     std::string label;
@@ -181,13 +178,7 @@ class ofApp : public ofBaseApp {
         TuneTutor::TimeStretcher *stretcher;
 
         // Pitch detection
-        aubio_pitch_t *pitchDetector;
-        size_t pdBufSize;
-        size_t pdHopSize;
-        fvec_t *pdInBuf;
-        fvec_t *pdOutBuf;
-        std::vector<float> pitchValues;
-        void detectPitches();
+        TuneTutor::PitchDetector *pitchDetector;
         float minPitch;
         float maxPitch;
         bool pitchesDetected;
