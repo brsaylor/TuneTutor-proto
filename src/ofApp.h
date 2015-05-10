@@ -165,7 +165,7 @@ class ofApp : public ofBaseApp {
         void playPause();
 
         // Sound file
-        SoundFile soundFile;
+        TuneTutor::SoundFile soundFile;
         std::vector<float> inputSamples;
         int sampleRate;
         int channels;

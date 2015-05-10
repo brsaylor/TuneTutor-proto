@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace TuneTutor {
+
 /**
  * Simple container for metadata fields extracted from a sound file.
  */
@@ -50,3 +52,5 @@ class SoundFile {
         std::vector<float> samples;
         bool loadMp3(std::string path);
 };
+
+}

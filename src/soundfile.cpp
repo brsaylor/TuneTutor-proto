@@ -8,6 +8,8 @@ extern "C" {
 
 #include "soundfile.h"
 
+namespace TuneTutor {
+
 SoundFile::SoundFile() {
     sampleRate = 0;
     channels = 0;
@@ -75,4 +77,6 @@ bool SoundFile::loadMp3(std::string path) {
 	mpg123_delete(f);
     
     return true;
+}
+
 }

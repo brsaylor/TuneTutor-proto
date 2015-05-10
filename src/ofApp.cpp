@@ -655,7 +655,7 @@ bool ofApp::openFile() {
             << "\nSample rate: " << sampleRate
             << "\nChannels: " << channels;
 
-        SoundFileMetadata metadata = soundFile.getMetadata();
+        TuneTutor::SoundFileMetadata metadata = soundFile.getMetadata();
         ((ofxUITextInput *) (metadataTable->getWidget("title")))
             ->setTextString(metadata.title);
         ((ofxUITextInput *) (metadataTable->getWidget("artist")))
