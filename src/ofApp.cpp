@@ -13,6 +13,10 @@ void ofApp::setup() {
     ofSetVerticalSync(true); 
     ofEnableSmoothing();
     ofSetFrameRate(60);
+    
+#if __APPLE__ && TARGET_OS_MAC
+    ofSetDataPathRoot("../Resources/");
+#endif
 
     // Initialize state variables
     fileName = "";

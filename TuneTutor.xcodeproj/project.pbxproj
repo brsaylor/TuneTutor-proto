@@ -37,15 +37,14 @@
 		9F5C6DD965B4F3A6DB5B88F8 /* ofxUI2DGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FF3B8D243CFB85AE0909EB /* ofxUI2DGraph.cpp */; };
 		ADE7C2AFC51E3F7E5E389026 /* ofxUISortableList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5613D5D24B00D8AD909F7E6A /* ofxUISortableList.cpp */; };
 		AE281BEBF3A00F1FC37F3DA0 /* ofxUIWaveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9345327AA463407B3DADBADE /* ofxUIWaveform.cpp */; };
-		B53E3A421B0DAC720020D286 /* opt in Frameworks */ = {isa = PBXBuildFile; fileRef = B53E3A411B0DAC710020D286 /* opt */; };
-		B58442581B0D5D39001750BF /* pitchdetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B58442501B0D5D39001750BF /* pitchdetector.cpp */; };
-		B58442591B0D5D39001750BF /* soundfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B58442521B0D5D39001750BF /* soundfile.cpp */; };
-		B584425A1B0D5D39001750BF /* timestretcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B58442541B0D5D39001750BF /* timestretcher.cpp */; };
-		B584425B1B0D5D39001750BF /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B58442561B0D5D39001750BF /* util.cpp */; };
-		B5DB8C2E1B0DB1E700B8B8B3 /* libaubio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5DB8C2D1B0DB1E400B8B8B3 /* libaubio.a */; };
-		B5DB8C301B0DB26700B8B8B3 /* libmpg123.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5DB8C2F1B0DB26300B8B8B3 /* libmpg123.0.dylib */; };
-		B5DB8C321B0DB29E00B8B8B3 /* librubberband.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5DB8C311B0DB29B00B8B8B3 /* librubberband.a */; };
-		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B554D82A1B0E63040018FD6F /* aubio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B554D8291B0E63040018FD6F /* aubio.framework */; };
+		B573EBBE1B0E9332007C3A8E /* libmpg123-mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B554D8421B0E70D40018FD6F /* libmpg123-mac.a */; };
+		B573EBC31B0E95C7007C3A8E /* librubberband.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B573EBC21B0E95C7007C3A8E /* librubberband.dylib */; };
+		B5F8E90D1B0E5AAF000C36C6 /* pitchdetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F8E9051B0E5AAF000C36C6 /* pitchdetector.cpp */; };
+		B5F8E90E1B0E5AAF000C36C6 /* soundfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F8E9071B0E5AAF000C36C6 /* soundfile.cpp */; };
+		B5F8E90F1B0E5AAF000C36C6 /* timestretcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F8E9091B0E5AAF000C36C6 /* timestretcher.cpp */; };
+		B5F8E9101B0E5AAF000C36C6 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5F8E90B1B0E5AAF000C36C6 /* util.cpp */; };
+		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		BFEFCE32DAFE10A8EB519F6C /* ofxUISpacer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 30CBAAEC78A0E9EBBB10A05A /* ofxUISpacer.cpp */; };
 		C30B3A2A37F8F32EE7318718 /* ofxUILabelToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76AF3B44E0E2FA8BFBD5F592 /* ofxUILabelToggle.cpp */; };
 		C381F2B7CFD84C0E540EB4BC /* ofxUIBiLabelSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 876BBA9542E267584885CAD8 /* ofxUIBiLabelSlider.cpp */; };
@@ -85,6 +84,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B554D83F1B0E70D40018FD6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B554D83A1B0E70D40018FD6F /* mpg123.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD132C0E152A48C200B4F5A8;
+			remoteInfo = "mpg123-ios";
+		};
+		B554D8411B0E70D40018FD6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B554D83A1B0E70D40018FD6F /* mpg123.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CD6D72D1152B748200CF4285;
+			remoteInfo = "mpg123-mac";
+		};
+		B554D8441B0E71CC0018FD6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B554D83A1B0E70D40018FD6F /* mpg123.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CD6D72D0152B748200CF4285;
+			remoteInfo = "mpg123-mac";
+		};
 		E4328147138ABC890047C5CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
@@ -184,18 +204,17 @@
 		AEFCF7E549ACA862C022AD40 /* ofxUIDefines.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUIDefines.h; path = ../../../addons/ofxUI/src/ofxUIDefines.h; sourceTree = SOURCE_ROOT; };
 		B21E7E5F548EEA92F368040B /* tinyxml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tinyxml.h; path = ../../../addons/ofxXmlSettings/libs/tinyxml.h; sourceTree = SOURCE_ROOT; };
 		B3CA0202B1A3B6D8920C2B15 /* ofxUIButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUIButton.h; path = ../../../addons/ofxUI/src/ofxUIButton.h; sourceTree = SOURCE_ROOT; };
-		B53E3A411B0DAC710020D286 /* opt */ = {isa = PBXFileReference; lastKnownFileType = folder; name = opt; path = ../../../../../../opt; sourceTree = "<group>"; };
-		B58442501B0D5D39001750BF /* pitchdetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pitchdetector.cpp; sourceTree = "<group>"; };
-		B58442511B0D5D39001750BF /* pitchdetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pitchdetector.h; sourceTree = "<group>"; };
-		B58442521B0D5D39001750BF /* soundfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundfile.cpp; sourceTree = "<group>"; };
-		B58442531B0D5D39001750BF /* soundfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundfile.h; sourceTree = "<group>"; };
-		B58442541B0D5D39001750BF /* timestretcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timestretcher.cpp; sourceTree = "<group>"; };
-		B58442551B0D5D39001750BF /* timestretcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timestretcher.h; sourceTree = "<group>"; };
-		B58442561B0D5D39001750BF /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
-		B58442571B0D5D39001750BF /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		B5DB8C2D1B0DB1E400B8B8B3 /* libaubio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libaubio.a; path = ../../../../../../opt/local/lib/libaubio.a; sourceTree = "<group>"; };
-		B5DB8C2F1B0DB26300B8B8B3 /* libmpg123.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmpg123.0.dylib; path = ../../../../../../opt/local/lib/libmpg123.0.dylib; sourceTree = "<group>"; };
-		B5DB8C311B0DB29B00B8B8B3 /* librubberband.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librubberband.a; path = ../../../../../../opt/local/lib/librubberband.a; sourceTree = "<group>"; };
+		B554D8291B0E63040018FD6F /* aubio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = aubio.framework; sourceTree = "<group>"; };
+		B554D83A1B0E70D40018FD6F /* mpg123.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mpg123.xcodeproj; path = "third-party/mpg123-1.22.1/ports/Xcode/mpg123.xcodeproj"; sourceTree = "<group>"; };
+		B573EBC21B0E95C7007C3A8E /* librubberband.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librubberband.dylib; path = "third-party/rubberband-1.8.1/lib/librubberband.dylib"; sourceTree = "<group>"; };
+		B5F8E9051B0E5AAF000C36C6 /* pitchdetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pitchdetector.cpp; sourceTree = "<group>"; };
+		B5F8E9061B0E5AAF000C36C6 /* pitchdetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pitchdetector.h; sourceTree = "<group>"; };
+		B5F8E9071B0E5AAF000C36C6 /* soundfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundfile.cpp; sourceTree = "<group>"; };
+		B5F8E9081B0E5AAF000C36C6 /* soundfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = soundfile.h; sourceTree = "<group>"; };
+		B5F8E9091B0E5AAF000C36C6 /* timestretcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timestretcher.cpp; sourceTree = "<group>"; };
+		B5F8E90A1B0E5AAF000C36C6 /* timestretcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timestretcher.h; sourceTree = "<group>"; };
+		B5F8E90B1B0E5AAF000C36C6 /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
+		B5F8E90C1B0E5AAF000C36C6 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		B848522CCA3A75ABD56752C9 /* ofxUIImageToggle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxUIImageToggle.cpp; path = ../../../addons/ofxUI/src/ofxUIImageToggle.cpp; sourceTree = SOURCE_ROOT; };
 		BBAB23BE13894E4700AA2426 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../libs/glut/lib/osx/GLUT.framework; sourceTree = "<group>"; };
 		BC6931447DE6C359DDDF21F1 /* ofxUIMultiImageButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxUIMultiImageButton.h; path = ../../../addons/ofxUI/src/ofxUIMultiImageButton.h; sourceTree = SOURCE_ROOT; };
@@ -257,19 +276,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B53E3A421B0DAC720020D286 /* opt in Frameworks */,
+				B573EBC31B0E95C7007C3A8E /* librubberband.dylib in Frameworks */,
+				B573EBBE1B0E9332007C3A8E /* libmpg123-mac.a in Frameworks */,
 				E7F985F815E0DEA3003869B5 /* Accelerate.framework in Frameworks */,
-				B5DB8C301B0DB26700B8B8B3 /* libmpg123.0.dylib in Frameworks */,
 				E7E077E815D3B6510020DFD4 /* QTKit.framework in Frameworks */,
 				E4EB6799138ADC1D00A09F29 /* GLUT.framework in Frameworks */,
-				B5DB8C2E1B0DB1E700B8B8B3 /* libaubio.a in Frameworks */,
 				E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */,
+				B554D82A1B0E63040018FD6F /* aubio.framework in Frameworks */,
 				E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */,
 				E45BE97C0E8CC7DD009D7055 /* ApplicationServices.framework in Frameworks */,
 				E45BE97D0E8CC7DD009D7055 /* AudioToolbox.framework in Frameworks */,
 				E45BE97F0E8CC7DD009D7055 /* CoreAudio.framework in Frameworks */,
 				E45BE9800E8CC7DD009D7055 /* CoreFoundation.framework in Frameworks */,
-				B5DB8C321B0DB29E00B8B8B3 /* librubberband.a in Frameworks */,
 				E45BE9810E8CC7DD009D7055 /* CoreServices.framework in Frameworks */,
 				E45BE9830E8CC7DD009D7055 /* OpenGL.framework in Frameworks */,
 				E45BE9840E8CC7DD009D7055 /* QuickTime.framework in Frameworks */,
@@ -320,6 +338,15 @@
 			name = ofxUI;
 			sourceTree = "<group>";
 		};
+		B554D83B1B0E70D40018FD6F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B554D8401B0E70D40018FD6F /* libmpg123-ios.a */,
+				B554D8421B0E70D40018FD6F /* libmpg123-mac.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -353,6 +380,7 @@
 		BBAB23CA13894EDB00AA2426 /* 3rd party frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B554D8291B0E63040018FD6F /* aubio.framework */,
 				BBAB23BE13894E4700AA2426 /* GLUT.framework */,
 			);
 			name = "3rd party frameworks";
@@ -479,10 +507,8 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
-				B5DB8C311B0DB29B00B8B8B3 /* librubberband.a */,
-				B5DB8C2F1B0DB26300B8B8B3 /* libmpg123.0.dylib */,
-				B5DB8C2D1B0DB1E400B8B8B3 /* libaubio.a */,
-				B53E3A411B0DAC710020D286 /* opt */,
+				B573EBC21B0E95C7007C3A8E /* librubberband.dylib */,
+				B554D83A1B0E70D40018FD6F /* mpg123.xcodeproj */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -496,14 +522,14 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				B58442501B0D5D39001750BF /* pitchdetector.cpp */,
-				B58442511B0D5D39001750BF /* pitchdetector.h */,
-				B58442521B0D5D39001750BF /* soundfile.cpp */,
-				B58442531B0D5D39001750BF /* soundfile.h */,
-				B58442541B0D5D39001750BF /* timestretcher.cpp */,
-				B58442551B0D5D39001750BF /* timestretcher.h */,
-				B58442561B0D5D39001750BF /* util.cpp */,
-				B58442571B0D5D39001750BF /* util.h */,
+				B5F8E9051B0E5AAF000C36C6 /* pitchdetector.cpp */,
+				B5F8E9061B0E5AAF000C36C6 /* pitchdetector.h */,
+				B5F8E9071B0E5AAF000C36C6 /* soundfile.cpp */,
+				B5F8E9081B0E5AAF000C36C6 /* soundfile.h */,
+				B5F8E9091B0E5AAF000C36C6 /* timestretcher.cpp */,
+				B5F8E90A1B0E5AAF000C36C6 /* timestretcher.h */,
+				B5F8E90B1B0E5AAF000C36C6 /* util.cpp */,
+				B5F8E90C1B0E5AAF000C36C6 /* util.h */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
@@ -535,6 +561,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B554D8451B0E71CC0018FD6F /* PBXTargetDependency */,
 				E4EEB9AC138B136A00A80321 /* PBXTargetDependency */,
 			);
 			name = TuneTutor;
@@ -548,7 +575,7 @@
 		E4B69B4C0A3A1720003C02F2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "TuneTutor" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -565,6 +592,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = B554D83B1B0E70D40018FD6F /* Products */;
+					ProjectRef = B554D83A1B0E70D40018FD6F /* mpg123.xcodeproj */;
+				},
+				{
 					ProductGroup = E4328144138ABC890047C5CB /* Products */;
 					ProjectRef = E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */;
 				},
@@ -577,6 +608,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		B554D8401B0E70D40018FD6F /* libmpg123-ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libmpg123-ios.a";
+			remoteRef = B554D83F1B0E70D40018FD6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B554D8421B0E70D40018FD6F /* libmpg123-mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libmpg123-mac.a";
+			remoteRef = B554D8411B0E70D40018FD6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E4328148138ABC890047C5CB /* openFrameworksDebug.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -598,7 +643,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -f ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libfmodex.dylib\"; install_name_tool -change ./libfmodex.dylib @executable_path/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\ncp -f \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n";
+			shellScript = "cp -f ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libfmodex.dylib\"; install_name_tool -change ./libfmodex.dylib @executable_path/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\ncp -f \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\ncp -R bin/data/ \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources\";\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -615,7 +660,7 @@
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
 				9F5C6DD965B4F3A6DB5B88F8 /* ofxUI2DGraph.cpp in Sources */,
 				4B3ED367CA852D522E2EE996 /* ofxUI2DPad.cpp in Sources */,
-				B584425A1B0D5D39001750BF /* timestretcher.cpp in Sources */,
+				B5F8E90F1B0E5AAF000C36C6 /* timestretcher.cpp in Sources */,
 				F1E8DE8734BA6F69A5112FA8 /* ofxUIBaseDraws.cpp in Sources */,
 				C381F2B7CFD84C0E540EB4BC /* ofxUIBiLabelSlider.cpp in Sources */,
 				7D393646FB859A930EF58917 /* ofxUIButton.cpp in Sources */,
@@ -624,7 +669,7 @@
 				9BE4AE0AA2B8C436BDFE9D4D /* ofxUIDragableLabelButton.cpp in Sources */,
 				F392A99D83698FC099127880 /* ofxUIDropDownList.cpp in Sources */,
 				084025DA517D8329301FE1B6 /* ofxUIEventArgs.cpp in Sources */,
-				B58442581B0D5D39001750BF /* pitchdetector.cpp in Sources */,
+				B5F8E90D1B0E5AAF000C36C6 /* pitchdetector.cpp in Sources */,
 				7252706DA14C1BE63950ADDA /* ofxUIFPS.cpp in Sources */,
 				22030CBDCC25D815E7ED6757 /* ofxUIFPSSlider.cpp in Sources */,
 				3D4EA8E172D3E4A30FEFA969 /* ofxUIImage.cpp in Sources */,
@@ -636,11 +681,11 @@
 				FFD1EBFCA24DFB4E4427B4FE /* ofxUILabelButton.cpp in Sources */,
 				C30B3A2A37F8F32EE7318718 /* ofxUILabelToggle.cpp in Sources */,
 				9A83D1B3FB64456BC907667F /* ofxUIMinimalSlider.cpp in Sources */,
-				B584425B1B0D5D39001750BF /* util.cpp in Sources */,
+				B5F8E9101B0E5AAF000C36C6 /* util.cpp in Sources */,
 				F440B307990F8F5CE40B9111 /* ofxUIMovingGraph.cpp in Sources */,
 				222C3AB10FA3158602718602 /* ofxUIMultiImageButton.cpp in Sources */,
 				F9C20834354ACC8337320B8C /* ofxUIMultiImageToggle.cpp in Sources */,
-				B58442591B0D5D39001750BF /* soundfile.cpp in Sources */,
+				B5F8E90E1B0E5AAF000C36C6 /* soundfile.cpp in Sources */,
 				E3D59A6B55F05669B3FBF8BD /* ofxUINumberDialer.cpp in Sources */,
 				D60E54E7FD6E19BC8636E0D2 /* ofxUIRadio.cpp in Sources */,
 				1587708E3CAC72997E43504E /* ofxUIRangeSlider.cpp in Sources */,
@@ -667,6 +712,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		B554D8451B0E71CC0018FD6F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "mpg123-mac";
+			targetProxy = B554D8441B0E71CC0018FD6F /* PBXContainerItemProxy */;
+		};
 		E4EEB9AC138B136A00A80321 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = openFrameworks;
@@ -679,6 +729,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -702,7 +753,6 @@
 					../../../addons/ofxUI/src,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"-D__MACOSX_CORE__",
 					"-lpthread",
@@ -716,6 +766,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -752,19 +803,22 @@
 		E4B69B600A3A1757003C02F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(PROJECT_DIR)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
-				"HEADER_SEARCH_PATHS[arch=*]" = (
+				HEADER_SEARCH_PATHS = (
+					"third-party/mpg123-1.22.1/ports/Xcode/",
+					"third-party/rubberband-1.8.1/",
 					"$(OF_CORE_HEADERS)",
 					../../../addons/ofxXmlSettings/libs,
 					../../../addons/ofxXmlSettings/src,
@@ -775,12 +829,8 @@
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/opt/local/lib/,
-					/opt/local/lib,
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/third-party/rubberband-1.8.1/lib";
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = /opt/local/include/;
 				VALID_ARCHS = i386;
 				WRAPPER_EXTENSION = app;
 			};
@@ -789,27 +839,33 @@
 		E4B69B610A3A1757003C02F2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(PROJECT_DIR)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
+				HEADER_SEARCH_PATHS = (
+					"third-party/mpg123-1.22.1/ports/Xcode/",
+					"third-party/rubberband-1.8.1/",
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxXmlSettings/libs,
+					../../../addons/ofxXmlSettings/src,
+					../../../addons/ofxUI/libs,
+					../../../addons/ofxUI/src,
+				);
 				ICON = "$(ICON_NAME_RELEASE)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					/opt/local/lib/,
-					/opt/local/lib,
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/third-party/rubberband-1.8.1/lib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = /opt/local/include;
 				VALID_ARCHS = i386;
 				WRAPPER_EXTENSION = app;
 			};
