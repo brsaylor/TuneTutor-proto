@@ -58,7 +58,7 @@ class TimeStretcher {
         SoundFile soundFile;
         int channels;
         std::vector<float> inputSamples;
-        RubberBand::RubberBandStretcher *rubberband = nullptr;
+        RubberBand::RubberBandStretcher *rubberband = NULL;
         int playheadPos;
         
         // Input buffers for the RubberBandStretcher

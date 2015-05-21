@@ -77,7 +77,7 @@ class ofApp : public ofBaseApp {
         const int selectionHandleRadius = 8;
         const float pitchRangeMin = 55; // G below middle C
         const float pitchRangeMax = 86; // high D
-        const std::set<float> highlightPitches = {55, 62, 69, 76};
+        std::set<float> highlightPitches;
         const float defaultSamplesPerPixel = 100;
         const float positionBarHeight = 8;
         const float positionHandleRadius = 10;

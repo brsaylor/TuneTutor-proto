@@ -83,7 +83,7 @@ void TimeStretcher::getOutput(float *output, int bufferSize) {
 }
 
 TimeStretcher::~TimeStretcher() {
-    if (rubberband != nullptr) {
+    if (rubberband != NULL) {
         delete rubberband;
     }
 }

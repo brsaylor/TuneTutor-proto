@@ -24,7 +24,7 @@ void ofApp::setup() {
     playing = false;
     playMode = PLAYMODE_PLAY_TO_END;
 
-    markBeingDragged = nullptr;
+    markBeingDragged = NULL;
 
     // Set up audio
     // FIXME: need to update channels and samplerate when soundfile is loaded
@@ -34,12 +34,12 @@ void ofApp::setup() {
     soundStream.setup(this, channels, 0, sampleRate, bufferSize, 4);
     soundStream.stop();
 
-    stretcher = nullptr;
+    stretcher = NULL;
 
     minPitch = pitchRangeMin;
     maxPitch = pitchRangeMax;
 
-    pitchDetector = nullptr;
+    pitchDetector = NULL;
     pitchesDetected = false;
 
     /*********************************
@@ -108,6 +108,10 @@ void ofApp::setup() {
     markLineColor.set(60, 160, 70);
     pitchLineColor.set(108, 108, 255, 128);
     pitchLineHighlightColor.set(108, 108, 255, 200);
+    highlightPitches.insert(55.0);
+    highlightPitches.insert(62.0);
+    highlightPitches.insert(69.0);
+    highlightPitches.insert(76.0);
 
     vizTop = selectionStripBottom + 1;
     vizHeight = 240;
@@ -168,7 +172,7 @@ void ofApp::setup() {
             ofGetWidth() / 2, ofGetHeight() - markTableY - padding);
     configureCanvas(markTable);
     markTable->setScrollableDirections(false, true);
-    lastMarkPositionButton = nullptr;
+    lastMarkPositionButton = NULL;
     ofAddListener(markTable->newGUIEvent, this, &ofApp::guiEventMarkTable);
 
     markTable->getSRect()->setWidth(ofGetWidth() / 2 - padding / 2);
@@ -418,14 +422,14 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     } else if (e.widget == playModeToggles[2]) {
         playMode = PLAYMODE_PLAY_TO_END;
     } else if (e.widget == (ofxUIWidget *) speedSlider) {
-        if (stretcher != nullptr) {
+        if (stretcher != NULL) {
             stretcher->setSpeed(speed / 100.0);
         }
     } else if (e.widget == (ofxUIWidget *) zoomSlider) {
         setSamplesPerPixel(defaultSamplesPerPixel / zoom);
     } else if (e.widget == (ofxUIWidget *) transposeSlider
             || e.widget == (ofxUIWidget *) tuningSlider) {
-        if (stretcher != nullptr) {
+        if (stretcher != NULL) {
             stretcher->setPitch(transpose + tuning / 100.0);
         }
     } else if (e.widget == (ofxUIWidget *) pitchRangeSlider) {
@@ -515,7 +519,7 @@ void ofApp::mousePressed(int x, int y, int button) {
         // Left click on mark strip
         if (y >= markStripTop && y <= markStripBottom) {
             Mark *mark = getMarkAtDisplayX(x);
-            if (mark == nullptr) {
+            if (mark == NULL) {
                 insertMark(getSampleIndexFromDisplayX(x));
             } else {
                 markBeingDragged = mark;
@@ -538,7 +542,7 @@ void ofApp::mousePressed(int x, int y, int button) {
             }
 
         // Left click on visualization
-        } else if (y >= vizTop && y <= vizBottom && stretcher != nullptr) {
+        } else if (y >= vizTop && y <= vizBottom && stretcher != NULL) {
             draggingViz = true;
             vizDragStartX = x;
             prevPlayheadPos = playheadPos;
@@ -551,7 +555,7 @@ void ofApp::mousePressed(int x, int y, int button) {
                 && y <= positionHandleY + positionHandleRadius
                 && x >= positionHandleX - positionHandleRadius
                 && x <= positionHandleX + positionHandleRadius
-                && stretcher != nullptr
+                && stretcher != NULL
                 ) {
             draggingPosition = true;
             positionDragStartX = x;
@@ -565,7 +569,7 @@ void ofApp::mousePressed(int x, int y, int button) {
         if (y >= markStripTop && y <= markStripBottom) {
             // Check for right-click on mark
             Mark *clickedMark = getMarkAtDisplayX(x);
-            if (clickedMark != nullptr) {
+            if (clickedMark != NULL) {
                 ofLog() << "Mark at position " << clickedMark->position
                     << " clicked";
                 deleteMark(clickedMark);
@@ -585,7 +589,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
     } else if (draggingPosition) {
         seek(prevPlayheadPos - (positionDragStartX - x) *
             (inputSamples.size() / channels / (ofGetWidth() - 2 * padding)));
-    } else if (markBeingDragged != nullptr) {
+    } else if (markBeingDragged != NULL) {
         updateMarkPosition(markBeingDragged, getSampleIndexFromDisplayX(x));
     }
 }
@@ -601,7 +605,7 @@ void ofApp::mouseReleased(int x, int y, int button) {
     }
     draggingSelectionStart = false;
     draggingSelectionEnd = false;
-    markBeingDragged = nullptr;
+    markBeingDragged = NULL;
 }
 
 //--------------------------------------------------------------
@@ -627,7 +631,7 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         playPause();
     }
 
-    if (stretcher == nullptr) {
+    if (stretcher == NULL) {
         return;
     }
 
@@ -683,11 +687,11 @@ bool ofApp::openFile() {
         ((ofxUITextInput *) (metadataTable->getWidget("album")))
             ->setTextString(metadata.album);
 
-        if (stretcher != nullptr) {
+        if (stretcher != NULL) {
             delete stretcher;
         }
         stretcher = new TuneTutor::TimeStretcher(soundFile);
-        if (pitchDetector != nullptr) {
+        if (pitchDetector != NULL) {
             delete pitchDetector;
         }
         pitchDetector = new TuneTutor::PitchDetector(soundFile);
@@ -710,7 +714,7 @@ int ofApp::getSampleIndexFromDisplayX(float displayX) {
 }
 
 Mark *ofApp::getMarkAtDisplayX(int x) {
-    Mark *locatedMark = nullptr;
+    Mark *locatedMark = NULL;
     float markX;
     for (Mark *mark : marks) {
         if (mark->position < displayStartSample) {
@@ -735,7 +739,7 @@ Mark *ofApp::insertMark(int position, std::string label) {
     // Append a row of widgets to the mark table
     mark->positionButton =  new ofxUILabelButton(
             formatTime(mark->position), false);
-    if (lastMarkPositionButton == nullptr) {
+    if (lastMarkPositionButton == NULL) {
         markTable->addWidgetPosition(mark->positionButton,
                 OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
     } else {
@@ -839,7 +843,7 @@ void ofApp::saveSettings() {
 }
 
 void ofApp::setSamplesPerPixel(float ratio) {
-    if (pitchDetector == nullptr) {
+    if (pitchDetector == NULL) {
         return;
     }
     samplesPerPixel = ratio;
