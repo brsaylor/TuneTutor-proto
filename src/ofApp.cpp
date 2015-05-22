@@ -168,6 +168,7 @@ void ofApp::setup() {
     markTableGui->addLabel("Marks", OFX_UI_FONT_LARGE);
     addMarkButton = markTableGui->addLabelButton("Add Mark", false, false);
     markTableGui->autoSizeToFitWidgets();
+    ofAddListener(markTableGui->newGUIEvent, this, &ofApp::guiEventMarkTable);
     
     float markTableHeaderY = markTableGuiY +
         markTableGui->getRect()->getHeight() + padding; 
@@ -432,7 +433,6 @@ void ofApp::drawPositionBar() {
 
 //--------------------------------------------------------------
 void ofApp::guiEvent(ofxUIEventArgs &e) {
-    std::string name = e.widget->getName();
 
     if (e.widget == openFileButton && openFileButton->getValue()) {
 		ofFileDialogResult openFileResult = ofSystemLoadDialog(
@@ -510,6 +510,8 @@ void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
                 }
             }
         }
+    } else if (e.widget == addMarkButton && addMarkButton->getValue()) {
+        insertMark(playheadPos, "");
     }
 }
 
@@ -775,6 +777,15 @@ Mark *ofApp::insertMark(int position, std::string label) {
     Mark *mark = new Mark();
     mark->position = position;
     mark->label = label;
+
+    // Refuse to insert a mark at the same position as another mark
+    std::set<Mark*, MarkCompare>::iterator it = marks.lower_bound(mark);
+    if (it != marks.end()
+            && (*(marks.lower_bound(mark)))->position == position) {
+        ofLog() << "insertMark: not inserting, because a mark is already there"
+            << std::endl;
+        return NULL;
+    }
 
     // Append a row of widgets to the mark table
     mark->positionButton =  new ofxUILabelButton(
