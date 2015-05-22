@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 
 #include "ofxXmlSettings.h"
 
@@ -42,6 +43,8 @@ void ofApp::setup() {
     transpose = 0;
     tuning = 0;
     playing = false;
+    playbackDelayed = false;
+    silentSamplesPlayed = 0;
     playMode = PLAYMODE_PLAY_TO_END;
 
     markBeingDragged = NULL;
@@ -532,6 +535,8 @@ void ofApp::playPause() {
     } else {
         playButton->setImage(&pauseImage);
         playing = true;
+        playbackDelayed = true;
+        silentSamplesPlayed = 0;
         soundStream.start();
     }
 }
@@ -699,12 +704,23 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         return;
     }
 
+    if (playbackDelayed) {
+        memset((void *) output, 0, bufferSize * channels * sizeof(float));
+        silentSamplesPlayed += bufferSize;
+        if (silentSamplesPlayed / (float) sampleRate >= playbackDelay) {
+            playbackDelayed = false;
+        }
+        return;
+    }
+
     stretcher->getOutput(output, bufferSize);
     playheadPos = stretcher->getPosition();
 
     if (playheadPos > selectionEnd) {
         if (playMode == PLAYMODE_LOOP_SELECTION) {
             seek(selectionStart);
+            playbackDelayed = true;
+            silentSamplesPlayed = 0;
         } else if (playMode == PLAYMODE_PLAY_SELECTION) {
             seek(selectionStart);
             playPause();

@@ -180,8 +180,12 @@ class ofApp : public ofBaseApp {
 
         // Audio setup
         bool playing;
+        bool playbackDelayed; // true if in a playback delay state
         int bufferSize;
         void playPause();
+
+        // Number of samples of silence played since playback delay started
+        int silentSamplesPlayed;
 
         // Sound file
         TuneTutor::SoundFile soundFile;
