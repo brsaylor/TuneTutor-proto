@@ -164,6 +164,8 @@ class ofApp : public ofBaseApp {
 
         ofxUILabelButton *openFileButton;
         ofxUIImageButton *playButton;
+        ofxUIImageButton *forwardButton;
+        ofxUIImageButton *backButton;
         ofxUIRadio *playModeRadio;
         std::vector<ofxUIToggle *> playModeToggles;
         ofxUISlider *zoomSlider;
@@ -190,6 +192,7 @@ class ofApp : public ofBaseApp {
         int prevPlayheadPos; // Position of playhead when dragging started
         int playheadPos;
         void seek(int position); // Set playhead position
+        void seekToNextMark(bool backward);
 
         // Time stretcher
         TuneTutor::TimeStretcher *stretcher;

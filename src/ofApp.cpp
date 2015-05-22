@@ -79,11 +79,12 @@ void ofApp::setup() {
 
     topGui->addSpacer(padding, 0);
 
-    topGui->addImageButton("back", "images/back.png", false);
+    backButton = topGui->addImageButton("back", "images/back.png", false);
     playButton = topGui->addImageButton("play", "images/play.png", false);
     playImage = *playButton->getImage();
     pauseImage.loadImage("images/pause.png");
-    topGui->addImageButton("forward", "images/forward.png", false);
+    forwardButton = topGui->addImageButton(
+            "forward", "images/forward.png", false);
 
     topGui->addSpacer(padding, 0);
 
@@ -336,12 +337,6 @@ void ofApp::draw() {
     drawVisualization();
     drawPitchLines();
 
-    // Draw playhead line
-    ofSetColor(playLineColor);
-    ofLine(
-            ofGetWidth() * .5, selectionStripTop, 
-            ofGetWidth() * .5, vizBottom);
-    
     // Draw marks
     ofSetColor(markLineColor);
     float markX;
@@ -359,6 +354,13 @@ void ofApp::draw() {
                 markX, markStripBottom);
         ofLine(markX, markStripBottom, markX, vizBottom);
     }
+
+    // Draw playhead line
+    ofSetColor(playLineColor);
+    ofLine(
+            ofGetWidth() * .5, selectionStripTop, 
+            ofGetWidth() * .5, vizBottom);
+    
 
     drawPositionBar();
 }
@@ -445,6 +447,10 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
         if (playButton->getValue()) {
             playPause();
         }
+    } else if (e.widget == backButton && backButton->getValue()) {
+        seekToNextMark(true);
+    } else if (e.widget == forwardButton && forwardButton->getValue()) {
+        seekToNextMark(false);
     } else if (e.widget == playModeToggles[0]) {
         playMode = PLAYMODE_PLAY_SELECTION;
     } else if (e.widget == playModeToggles[1]) {
@@ -527,6 +533,32 @@ void ofApp::playPause() {
         playButton->setImage(&pauseImage);
         playing = true;
         soundStream.start();
+    }
+}
+
+void ofApp::seekToNextMark(bool backward) {
+    Mark m; // Dummy mark containing playhead position, for comparison to marks
+    m.position = playheadPos;
+    std::set<Mark*, MarkCompare>::iterator it;
+    if (backward) {
+        it = marks.lower_bound(&m);
+        if (it == marks.begin() || marks.empty()) {
+            // The playhead position is before the first mark,
+            // so just seek to the beginning of the audio
+            seek(0);
+        } else {
+            it--;
+            seek((*it)->position);
+        }
+    } else {
+        // Seek forward
+        it = marks.upper_bound(&m);
+        if (it == marks.end()) {
+            // No mark forward of the playhead position, so seek to the end
+            seek(inputSamples.size() / channels - 1);
+        } else {
+            seek((*it)->position);
+        }
     }
 }
 
@@ -684,7 +716,7 @@ void ofApp::seek(int position) {
     if (position <= 0) {
         playheadPos = 0;
     } else if (position * channels >= inputSamples.size()) {
-        playheadPos = inputSamples.size() / channels;
+        playheadPos = inputSamples.size() / channels - 1;
     } else {
         playheadPos = position;
     }
