@@ -303,6 +303,17 @@ void ofApp::update() {
     positionHandleX = playheadPos / (float) (inputSamples.size() / channels)
         * (ofGetWidth() - 2 * padding)
         + padding;
+
+    // Enforce a minimum visible pitch range of 5 semitones
+    if (maxPitch - minPitch < 5) {
+        if (maxPitch >= pitchRangeMax) {
+            minPitch = maxPitch - 5;
+            pitchRangeSlider->setValueLow(minPitch);
+        } else {
+            maxPitch = minPitch + 5;
+            pitchRangeSlider->setValueHigh(maxPitch);
+        }
+    }
 }
 
 //--------------------------------------------------------------
