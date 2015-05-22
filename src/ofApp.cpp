@@ -47,7 +47,6 @@ void ofApp::setup() {
     markBeingDragged = NULL;
 
     // Set up audio
-    // FIXME: need to update channels and samplerate when soundfile is loaded
     bufferSize = 512;
     sampleRate = 44100;
     channels = 2;
@@ -685,6 +684,12 @@ void ofApp::setFilePath(std::string path) {
 
 /** Depends on filePath being set. */
 bool ofApp::openFile() {
+    if (soundFile.isLoaded()) {
+        saveSettings();
+    }
+    if (playing) {
+        playPause();
+    }
     bool ok = soundFile.load(filePath);
     if (ok) {
         fileName = ofFilePath::getBaseName(filePath);
@@ -699,6 +704,9 @@ bool ofApp::openFile() {
             << "\nSample rate: " << sampleRate
             << "\nChannels: " << channels;
 
+        clearMarks();
+        clearMetadata();
+
         TuneTutor::SoundFileMetadata metadata = soundFile.getMetadata();
         ((ofxUITextInput *) (metadataTable->getWidget("title")))
             ->setTextString(metadata.title);
@@ -711,6 +719,7 @@ bool ofApp::openFile() {
             delete stretcher;
         }
         stretcher = new TuneTutor::TimeStretcher(soundFile);
+        seek(0);
         if (pitchDetector != NULL) {
             delete pitchDetector;
         }
@@ -794,6 +803,14 @@ void ofApp::deleteMark(Mark *mark) {
     delete mark;
 }
 
+void ofApp::clearMarks() {
+    for (Mark *mark : marks) {
+        delete mark;
+    }
+    marks.clear();
+    markTable->clearWidgets();
+}
+
 // Because marks is an ordered set, and the key for ordering is the position,
 // the set needs to be updated when a mark's position changes.
 void ofApp::updateMarkPosition(Mark *mark, int position) {
@@ -825,6 +842,12 @@ void ofApp::loadSettings() {
         xml.popTag();
         selectionStart = xml.getValue("selectionStart", -1);
         selectionEnd = xml.getValue("selectionEnd", -1);
+    }
+}
+
+void ofApp::clearMetadata() {
+    for (ofxUITextInput *input : metadataInputs) {
+        input->setTextString("");
     }
 }
 

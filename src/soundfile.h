@@ -52,6 +52,7 @@ class SoundFile {
 
         int getSampleRate() const;
         int getChannels() const;
+        bool isLoaded() const;
         SoundFileMetadata getMetadata() const;
 
         /**
@@ -67,6 +68,7 @@ class SoundFile {
         SoundFileMetadata metadata;
         std::vector<float> samples;
         bool loadMp3(std::string path);
+        bool loaded;
 };
 
 }

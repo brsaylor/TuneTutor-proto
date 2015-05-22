@@ -123,6 +123,7 @@ class ofApp : public ofBaseApp {
         Mark *getMarkAtDisplayX(int x);
         Mark *insertMark(int position, std::string label = "");
         void deleteMark(Mark *mark);
+        void clearMarks();
         void updateMarkPosition(Mark *mark, int position);
         ofxUILabelButton *lastMarkPositionButton;
 
@@ -173,6 +174,7 @@ class ofApp : public ofBaseApp {
         ofxUILabelButton *addMarkButton;
 
         std::set<ofxUITextInput *> metadataInputs;
+        void clearMetadata();
 
         // Audio setup
         bool playing;

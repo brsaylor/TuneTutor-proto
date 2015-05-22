@@ -32,7 +32,12 @@ SoundFile::SoundFile() {
 }
 
 bool SoundFile::load(std::string path) {
-    return loadMp3(path);
+    loaded = loadMp3(path);
+    return loaded;
+}
+
+bool SoundFile::isLoaded() const {
+    return loaded;
 }
 
 int SoundFile::getSampleRate() const {
