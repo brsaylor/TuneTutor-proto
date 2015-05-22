@@ -75,18 +75,23 @@ bool SoundFile::loadMp3(std::string path) {
     mpg123_id3v1 *id3v1;
     mpg123_id3v2 *id3v2;
     mpg123_id3(f, &id3v1, &id3v2);
-    if (id3v2 != NULL) {
-        std::cout << "id3v2 data found" << std::endl;
-        metadata.title = id3v2->title->p;
-        metadata.artist = id3v2->artist->p;
-        metadata.album = id3v2->album->p;
-    } else if (id3v1 != NULL) {
+    if (id3v1 != NULL) {
         std::cout << "id3v1 data found" << std::endl;
         metadata.title = std::string(id3v1->title, 30);
         metadata.artist = std::string(id3v1->artist, 30);
         metadata.album = std::string(id3v1->album, 30);
-    } else {
-        std::cout << "No id3 data found" << std::endl;
+    }
+    if (id3v2 != NULL) {
+        std::cout << "id3v2 data found" << std::endl;
+        if (id3v2->title != NULL) {
+            metadata.title = id3v2->title->p;
+        }
+        if (id3v2->artist != NULL) {
+            metadata.artist = id3v2->artist->p;
+        }
+        if (id3v2->album != NULL) {
+            metadata.album = id3v2->album->p;
+        }
     }
 
 	mpg123_close(f);
