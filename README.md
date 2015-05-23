@@ -23,6 +23,8 @@ Web site: http://thecity.sfsu.edu/~bsaylor/TuneTutor/
 
 ## Build Instructions
 
+After cloning the GitHub repository, rename TuneTutor-proto to TuneTutor.
+
 ### Linux
 
 These instructions should work for Linux Mint 17.1, Ubuntu 14.04 LTS, and
@@ -73,16 +75,20 @@ similar distributions.
    http://sourceforge.net/projects/mpg123/files/mpg123/1.22.1/ and place the
    extracted folder, mpg123-1.22.1, in the third-party folder.
 
-8. Download the Rubber Band Library v1.8.1 source from
+8. Patch mpg123 (this just changes some settings in the Xcode project): Open a
+   terminal and cd into TuneTutor/third-party/mpg123-1.22.1, then:
+   * patch -p1 < ../../mpg123-1.22.1.patch
+
+9. Download the Rubber Band Library v1.8.1 source from
    http://www.breakfastquay.com/rubberband/
    and place the extracted folder, rubberband-1.8.1, in the third-party folder.
 
-9. Patch, build, and install librubberband: Open a terminal and cd into
+10. Patch and build librubberband: Open a terminal and cd into
    TuneTutor/third-party/rubberband-1.8.1, then run the following commands:
     * patch -p1 < ../../rubberband-1.8.1.patch
     * mkdir lib
     * make -f Makefile.osx library
-    * sudo cp lib/librubberband.dylib /usr/lib
+    * rm lib/librubberband.dylib
 
-10. Open TuneTutor.xcodeproj in Xcode, hit the build/run button, and cross your
+11. Open TuneTutor.xcodeproj in Xcode, hit the build/run button, and cross your
     fingers!
