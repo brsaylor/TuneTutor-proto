@@ -908,7 +908,7 @@ Mark *ofApp::insertMark(int position, std::string label) {
             OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
     mark->selectEndToggle->getRect()->setX(200);
 
-    mark->labelInput = new ofxUITextInput("", mark->label, 100, 0, 0, 0);
+    mark->labelInput = new ofxUITextInput("", mark->label, 200, 0, 0, 0);
     markTable->addWidgetPosition(mark->labelInput,
             OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
     mark->labelInput->getRect()->setX(300);
