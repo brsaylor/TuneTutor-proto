@@ -1,0 +1,69 @@
+diff -Nru mpg123-1.22.1/ports/Xcode/mpg123.xcodeproj/project.pbxproj mpg123-1.22.1-patched/ports/Xcode/mpg123.xcodeproj/project.pbxproj
+--- mpg123-1.22.1/ports/Xcode/mpg123.xcodeproj/project.pbxproj	2015-04-01 00:50:40.000000000 -0700
++++ mpg123-1.22.1-patched/ports/Xcode/mpg123.xcodeproj/project.pbxproj	2015-05-23 13:21:24.000000000 -0700
+@@ -540,6 +540,8 @@
+ 			buildSettings = {
+ 				ALWAYS_SEARCH_USER_PATHS = NO;
+ 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
++				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
++				CLANG_CXX_LIBRARY = "libstdc++";
+ 				COPY_PHASE_STRIP = NO;
+ 				EXCLUDED_SOURCE_FILE_NAMES = "";
+ 				"EXCLUDED_SOURCE_FILE_NAMES[sdk=iphonesimulator*]" = (
+@@ -555,7 +557,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+-				SDKROOT = iphoneos;
++				SDKROOT = macosx;
+ 			};
+ 			name = Debug;
+ 		};
+@@ -564,6 +566,8 @@
+ 			buildSettings = {
+ 				ALWAYS_SEARCH_USER_PATHS = NO;
+ 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
++				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
++				CLANG_CXX_LIBRARY = "libstdc++";
+ 				COPY_PHASE_STRIP = YES;
+ 				EXCLUDED_SOURCE_FILE_NAMES = "";
+ 				"EXCLUDED_SOURCE_FILE_NAMES[sdk=iphonesimulator*]" = (
+@@ -576,7 +580,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+-				SDKROOT = iphoneos;
++				SDKROOT = macosx;
+ 				VALIDATE_PRODUCT = YES;
+ 			};
+ 			name = Release;
+@@ -606,10 +610,12 @@
+ 		CD6D72D2152B748200CF4285 /* Debug */ = {
+ 			isa = XCBuildConfiguration;
+ 			buildSettings = {
+-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
++				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
++				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
++				CLANG_CXX_LIBRARY = "libstdc++";
+ 				EXECUTABLE_PREFIX = lib;
+ 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
++				GCC_PREPROCESSOR_DEFINITIONS = "lfs_alias_t=off_t";
+ 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+ 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+ 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+@@ -622,10 +628,13 @@
+ 		CD6D72D3152B748200CF4285 /* Release */ = {
+ 			isa = XCBuildConfiguration;
+ 			buildSettings = {
+-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
++				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
++				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
++				CLANG_CXX_LIBRARY = "libstdc++";
+ 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+ 				EXECUTABLE_PREFIX = lib;
+ 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
++				GCC_PREPROCESSOR_DEFINITIONS = "lfs_alias_t=off_t";
+ 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+ 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+ 				MACOSX_DEPLOYMENT_TARGET = 10.7;
