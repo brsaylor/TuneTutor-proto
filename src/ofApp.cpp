@@ -693,9 +693,19 @@ void ofApp::mousePressed(int x, int y, int button) {
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
     if (draggingSelectionStart) {
-        selectionStart = getSampleIndexFromDisplayX(x);
+        Mark *snapMark = getMarkAtDisplayX(x);
+        if (snapMark) {
+            selectionStart = snapMark->position;
+        } else {
+            selectionStart = getSampleIndexFromDisplayX(x);
+        }
     } else if (draggingSelectionEnd) {
-        selectionEnd = getSampleIndexFromDisplayX(x);
+        Mark *snapMark = getMarkAtDisplayX(x);
+        if (snapMark) {
+            selectionEnd = snapMark->position;
+        } else {
+            selectionEnd = getSampleIndexFromDisplayX(x);
+        }
     } else if (draggingViz) {
         seek(prevPlayheadPos + (vizDragStartX - x) * samplesPerPixel);
     } else if (draggingPosition) {
@@ -846,6 +856,7 @@ int ofApp::getSampleIndexFromDisplayX(float displayX) {
     return samplesPerPixel * (displayX - ofGetWidth() / 2) + playheadPos;
 }
 
+// FIXME: this is inefficient; should use upper_bound/lower_bound
 Mark *ofApp::getMarkAtDisplayX(int x) {
     Mark *locatedMark = NULL;
     float markX;
