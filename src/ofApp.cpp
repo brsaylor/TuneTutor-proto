@@ -532,6 +532,28 @@ void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
         if (!ss.fail()) {
             seek(pos);
         }
+    } else if (e.widget->getKind() == OFX_UI_WIDGET_LABELTOGGLE
+            && ((ofxUILabelToggle *) e.widget)->getValue()) {
+        // If this is a selection start or end button, it should have the mark's
+        // position stored as its name. Try to get the position from the name
+        // and set the selection from it.
+        std::stringstream ss(e.widget->getName().substr(1));
+        int pos;
+        ss >> pos;
+        if (!ss.fail()) {
+            if (e.widget->getName()[0] == 'S') {
+                // Set the selection start
+                selectionStart = pos;
+                if (selectionStart > selectionEnd) {
+                    selectionEnd = selectionStart + sampleRate;
+                }
+            } else {
+                selectionEnd = pos;
+                if (selectionStart > selectionEnd) {
+                    selectionStart = selectionEnd - sampleRate;
+                }
+            }
+        }
     }
 }
 
@@ -849,6 +871,8 @@ Mark *ofApp::insertMark(int position, std::string label) {
     // Append a row of widgets to the mark table
     // The positionButton's name is the mark's position, enabling navigation to
     // that position by clicking on the button.
+    // The same hack is used for the selection buttons, but as a further hack
+    // the name is prefixed by 'S' or 'E' to differentate them.
     mark->positionButton =  new ofxUILabelButton(
             formatTime(mark->position), false);
     mark->positionButton->setName(std::to_string(mark->position));
@@ -862,12 +886,14 @@ Mark *ofApp::insertMark(int position, std::string label) {
     lastMarkPositionButton = mark->positionButton;
     mark->selectStartToggle = new ofxUILabelToggle(
             "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
+    mark->selectStartToggle->setName("S" + std::to_string(mark->position));
     markTable->addWidgetPosition(mark->selectStartToggle,
             OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
     mark->selectStartToggle->getRect()->setX(100);
 
     mark->selectEndToggle = new ofxUILabelToggle(
             "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
+    mark->selectEndToggle->setName("E" + std::to_string(mark->position));
     markTable->addWidgetPosition(mark->selectEndToggle,
             OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
     mark->selectEndToggle->getRect()->setX(200);
@@ -907,7 +933,10 @@ void ofApp::updateMarkPosition(Mark *mark, int position) {
 
     // The name of the positionButton is the position of the mark, to enable
     // navigation to the mark by clicking on the button.
+    // This hack is also used for the selection toggle buttons.
     mark->positionButton->setName(std::to_string(position));
+    mark->selectStartToggle->setName("S" + std::to_string(mark->position));
+    mark->selectEndToggle->setName("E" + std::to_string(mark->position));
 }
 
 std::string ofApp::getSettingsPath() {
