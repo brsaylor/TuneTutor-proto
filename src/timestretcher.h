@@ -25,6 +25,15 @@
 
 namespace TuneTutor {
 
+/**
+ * The TimeStretcher class provides time stretching (i.e. slowing down the audio
+ * independently of pitch) and pitch shifting functionality. It is a wrapper
+ * around RubberBandStretcher from the Rubber Band library. It instantiates and
+ * configures the parameters of the RubberBandStretcher, does the required
+ * buffering and sample (de-)interleaving, feeds samples into the
+ * RubberBandStretcher and retrieves the processed output, and provides a simple
+ * interface used by the ofApp class.
+ */
 class TimeStretcher {
 
     public:

@@ -14,6 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * Main header file for the TuneTutor openFrameworks app
+ */
+
 #pragma once
 
 #include "ofMain.h"
@@ -29,38 +33,45 @@ enum PlayMode {
     PLAYMODE_PLAY_TO_END
 };
 
+/**
+ * Represents a position on the timeline marked by the user.
+ */
 struct Mark {
 
     /** Position of the mark in sample frames */
     int position;
 
+    /** Description of the mark entered by the user */
     std::string label;
 
+    // ofxUI widgets that appear in the mark table (lower left area of the GUI)
+    // are here so they can be updated when the mark changes.
     ofxUILabelButton *positionButton;
     ofxUILabelButton *selectStartToggle;
     ofxUILabelButton *selectEndToggle;
     ofxUITextInput *labelInput;
 };
 
+/**
+ * Comparison function object used for the std::set of of Marks
+ */
 struct MarkCompare {
     bool operator() (const Mark *mark1, const Mark *mark2) const {
         return mark1->position < mark2->position;
     }
 };
 
+/**
+ * TuneTutor main class
+ */
 class ofApp : public ofBaseApp {
 
 	public:
+
+        // openFrameworks event handlers
 		void setup();
 		void update();
 		void draw();
-
-        void setFilePath(std::string path);
-
-        void drawVisualization();
-        void drawPitchLines();
-        void drawPositionBar();
-
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -71,19 +82,11 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
         void audioOut(float* output, int bufferSize, int nChannels);
-        void exit();
-
-        ofSoundStream soundStream;
-		
-        ofxUICanvas *topGui;   	
-        ofxUICanvas *midGui;
-        ofxUICanvas *metadataTable;
-        ofxUIScrollableCanvas *markTable;
         void guiEvent(ofxUIEventArgs &e);
         void guiEventMarkTable(ofxUIEventArgs &e);
+        void exit();
 
-        ofImage pauseImage;
-        ofImage playImage;
+        void setFilePath(std::string path);
 
     private:
         const std::string fontFile = "DroidSans.ttf";
@@ -97,6 +100,38 @@ class ofApp : public ofBaseApp {
         const float defaultSamplesPerPixel = 100;
         const float positionBarHeight = 8;
         const float positionHandleRadius = 10;
+
+        ofSoundStream soundStream;
+
+        void drawVisualization();
+        void drawPitchLines();
+        void drawPositionBar();
+		
+        // ofxUI stuff
+        ofxUICanvas *topGui;   	
+        ofxUICanvas *midGui;
+        ofxUICanvas *metadataTable;
+        ofxUIScrollableCanvas *markTable;
+        float midGuiY;
+        ofxUILabelButton *openFileButton;
+        ofxUIImageButton *playButton;
+        ofxUIImageButton *forwardButton;
+        ofxUIImageButton *backButton;
+        ofxUIRadio *playModeRadio;
+        std::vector<ofxUIToggle *> playModeToggles;
+        ofxUISlider *zoomSlider;
+        ofxUIRangeSlider *pitchRangeSlider;
+        ofxUIIntSlider *speedSlider;
+        ofxUIIntSlider *transposeSlider;
+        ofxUIIntSlider *tuningSlider;
+        ofxUILabelButton *addMarkButton;
+        ofxUILabelButton *lastMarkPositionButton;
+        std::set<ofxUITextInput *> metadataInputs;
+        void clearMetadata();
+        void configureCanvas(ofxUICanvas *canvas);
+
+        ofImage pauseImage;
+        ofImage playImage;
 
         void setSamplesPerPixel(float ratio);
 
@@ -125,7 +160,6 @@ class ofApp : public ofBaseApp {
         void deleteMark(Mark *mark);
         void clearMarks();
         void updateMarkPosition(Mark *mark, int position);
-        ofxUILabelButton *lastMarkPositionButton;
 
         bool drawSelection;
         float selectionStripTop;
@@ -148,7 +182,6 @@ class ofApp : public ofBaseApp {
         float vizTop;
         float vizHeight;
         float vizBottom;
-
         bool draggingViz;
         int vizDragStartX;
 
@@ -158,33 +191,13 @@ class ofApp : public ofBaseApp {
         bool draggingPosition;
         int positionDragStartX;
 
-        float midGuiY;
-
-        void configureCanvas(ofxUICanvas *canvas);
-
-        ofxUILabelButton *openFileButton;
-        ofxUIImageButton *playButton;
-        ofxUIImageButton *forwardButton;
-        ofxUIImageButton *backButton;
-        ofxUIRadio *playModeRadio;
-        std::vector<ofxUIToggle *> playModeToggles;
-        ofxUISlider *zoomSlider;
-        ofxUIRangeSlider *pitchRangeSlider;
-        ofxUIIntSlider *speedSlider;
-        ofxUIIntSlider *transposeSlider;
-        ofxUIIntSlider *tuningSlider;
-        ofxUILabelButton *addMarkButton;
-
-        std::set<ofxUITextInput *> metadataInputs;
-        void clearMetadata();
-
         // Audio setup
         bool playing;
         bool playbackDelayed; // true if in a playback delay state
         int bufferSize;
         void playPause();
 
-        // Number of samples of silence played since playback delay started
+        /** Number of samples of silence played since playback delay started */
         int silentSamplesPlayed;
 
         // Sound file
@@ -193,6 +206,7 @@ class ofApp : public ofBaseApp {
         int sampleRate;
         int channels;
 
+        // Playhead
         int prevPlayheadPos; // Position of playhead when dragging started
         int playheadPos;
         void seek(int position); // Set playhead position

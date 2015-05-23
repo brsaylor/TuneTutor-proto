@@ -14,8 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * A place for miscellaneous utility functions.
+ */
+
 #pragma once
 
 #include <string>
 
+/**
+ * @return the current user's home directory
+ */
 std::string getHomeDirectory();

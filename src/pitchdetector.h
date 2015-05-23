@@ -26,6 +26,17 @@ extern "C" {
 
 namespace TuneTutor {
 
+/**
+ * The PitchDetector class does pitch detection for the melodic visualization
+ * using the Aubio pitch detector. It instantiates and configures the Aubio
+ * pitch detector, passes the entire audio file through the pitch detector, and
+ * provides the pitch estimates to the ofApp. The pitch estimates are
+ * represented as a vector of floating point values whose units are MIDI
+ * pitches, with one pitch estimate for every 512 input sample frames. It also
+ * does some post-processing to the output of the Aubio pitch detector in an
+ * attempt to reduce spurious pitch jumps resulting from non-melodic elements in
+ * the audio.
+ */
 class PitchDetector {
 
     public:

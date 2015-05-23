@@ -14,6 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * Implementation of TuneTutor openFrameworks app.
+ *
+ * Main responsibilities:
+ * - Setting up the ofxUI-based GUI
+ * - Drawing the visualization, marks, and selection
+ * - Handling user input
+ * - Handling audio output
+ */
+
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
@@ -25,7 +35,6 @@
 #include "soundfile.h"
 #include "util.h"
 
-//--------------------------------------------------------------
 void ofApp::setup() {
     ofSetVerticalSync(true); 
     ofEnableSmoothing();
@@ -64,9 +73,10 @@ void ofApp::setup() {
     pitchDetector = NULL;
     pitchesDetected = false;
 
-    /*********************************
-     * Set up GUI
-     *********************************/
+    /***************************************************************************
+     * Set up GUI from top to bottom, including ofxUI widgets and elements drawn
+     * using the draw() method.
+     **************************************************************************/
 
     draggingSelectionStart = false;
     draggingSelectionEnd = false;
@@ -115,8 +125,6 @@ void ofApp::setup() {
     topGui->getRect()->setWidth(ofGetWidth());
     ofAddListener(topGui->newGUIEvent, this, &ofApp::guiEvent);
 
-    //----------------------------------------------------
-
     markStripTop = topGui->getRect()->getHeight() + padding;
     markStripBottom = markStripTop + markHeight;
 
@@ -143,8 +151,6 @@ void ofApp::setup() {
     positionBarTop = vizBottom + padding;
     positionHandleY = positionBarTop + positionBarHeight/2;
 
-    //----------------------------------------------------------
-
     midGuiY = positionBarTop + positionBarHeight + padding;
     midGui = new ofxUICanvas(0, midGuiY, 10, 10);
     configureCanvas(midGui);
@@ -162,8 +168,6 @@ void ofApp::setup() {
     midGui->getRect()->setWidth(ofGetWidth());
     ofAddListener(midGui->newGUIEvent, this, &ofApp::guiEvent);
 
-    //----------------------------------------------------------
-    
     float markTableGuiY = midGuiY + midGui->getRect()->getHeight() + padding;
     ofxUICanvas *markTableGui = new ofxUICanvas();
     markTableGui->getRect()->setY(markTableGuiY);
@@ -204,8 +208,6 @@ void ofApp::setup() {
     markTableGui->getRect()->setWidth(markTable->getSRect()->getWidth());
     markTableHeader->getRect()->setWidth(markTable->getSRect()->getWidth());
 
-    //-------------------------------------------------------
-    
     metadataTable = new ofxUICanvas();
     metadataTable->setWidgetSpacing(10);
     float metadataTableX = ofGetWidth() / 2 + padding / 2;
@@ -274,7 +276,9 @@ void ofApp::setup() {
     }
 }
 
-// Set common parameters of canvases
+/**
+ * Set common parameters of ofxUI canvases
+ */
 void ofApp::configureCanvas(ofxUICanvas *canvas) {
     canvas->setFont(fontFile);
     canvas->setFontSize(OFX_UI_FONT_LARGE, 12);
@@ -283,14 +287,15 @@ void ofApp::configureCanvas(ofxUICanvas *canvas) {
     //canvas->setColorBack(ofColor(128));
 }
 
-//--------------------------------------------------------------
 void ofApp::update() {
 
+    // Calculate the sample frame positions at the start and end of the visible
+    // region of audio
     displayStartSample = getSampleIndexFromDisplayX(padding);
     displayEndSample = getSampleIndexFromDisplayX(ofGetWidth() - padding);
     
-    // Calculate screen coordinates of selection, and decide whether it is on or
-    // off screen
+    // Calculate screen coordinates of the selection, and determine whether it
+    // is on or off screen
     selectionStartX = getDisplayXFromSampleIndex(selectionStart);
     selectionEndX = getDisplayXFromSampleIndex(selectionEnd);
     if (selectionStartX > ofGetWidth() - padding || selectionEndX < padding) {
@@ -321,7 +326,6 @@ void ofApp::update() {
     }
 }
 
-//--------------------------------------------------------------
 void ofApp::draw() {
     ofBackground(190);
     ofSetColor(mainColor);
@@ -368,6 +372,9 @@ void ofApp::draw() {
     drawPositionBar();
 }
 
+/**
+ * Draw the pitch-detection-based scrolling visualization.
+ */
 void ofApp::drawVisualization() {
     float top = selectionStripBottom;
     float width = ofGetWidth() - 2 * padding;
@@ -410,6 +417,10 @@ void ofApp::drawVisualization() {
     ofEndShape();
 }
 
+/**
+ * Draw horizontal lines at integer pitch values on top of the pitch
+ * visualization
+ */
 void ofApp::drawPitchLines() {
     float y;
     ofSetColor(pitchLineColor);
@@ -425,6 +436,10 @@ void ofApp::drawPitchLines() {
     }
 }
 
+/**
+ * Draw the bar under the pitch visualization that shows the current playhead
+ * position.
+ */
 void ofApp::drawPositionBar() {
     ofSetColor(mainColor);
     ofRect(
@@ -436,7 +451,9 @@ void ofApp::drawPositionBar() {
     ofCircle(positionHandleX, positionHandleY, positionHandleRadius);
 }
 
-//--------------------------------------------------------------
+/**
+ * ofxUI widget event handler
+ */
 void ofApp::guiEvent(ofxUIEventArgs &e) {
 
     if (e.widget == openFileButton && openFileButton->getValue()) {
@@ -492,6 +509,9 @@ void ofApp::guiEvent(ofxUIEventArgs &e) {
     }
 }
 
+/**
+ * A separate event handler for widgets in the mark table.
+ */
 void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
     if (e.widget->getKind() == OFX_UI_WIDGET_TEXTINPUT) {
         ofxUITextInput *input = (ofxUITextInput *) e.widget;
@@ -568,7 +588,7 @@ void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
 }
 
 /**
- * Play or pause playback, depending on whether currently playing
+ * Play or pause playback, depending on whether currently playing.
  */
 void ofApp::playPause() {
     if (playing) {
@@ -584,6 +604,12 @@ void ofApp::playPause() {
     }
 }
 
+/**
+ * Move the playhead to the next or previous mark.
+ *
+ * @param backward If true, move the playhead to the previous mark instead of
+ *        the next mark.
+ */
 void ofApp::seekToNextMark(bool backward) {
     Mark m; // Dummy mark containing playhead position, for comparison to marks
     m.position = playheadPos;
@@ -610,21 +636,17 @@ void ofApp::seekToNextMark(bool backward) {
     }
 }
 
-//--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
 
 }
 
-//--------------------------------------------------------------
 void ofApp::keyReleased(int key) {
 
 }
 
-//--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ) {
 }
 
-//--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
     if (button == 0) {
 
@@ -690,7 +712,6 @@ void ofApp::mousePressed(int x, int y, int button) {
     }
 }
 
-//--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
     if (draggingSelectionStart) {
         Mark *snapMark = getMarkAtDisplayX(x);
@@ -716,7 +737,6 @@ void ofApp::mouseDragged(int x, int y, int button) {
     }
 }
 
-//--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
     if (draggingViz || draggingPosition) {
         draggingViz = false;
@@ -730,22 +750,18 @@ void ofApp::mouseReleased(int x, int y, int button) {
     markBeingDragged = NULL;
 }
 
-//--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {
 
 }
 
-//--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg) {
 
 }
 
-//--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo) { 
 
 }
 
-//--------------------------------------------------------------
 void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
 
     if (playheadPos * channels >= inputSamples.size()) {
@@ -757,6 +773,8 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
         return;
     }
 
+    // When a playback delay is set by the user, output silence until the set
+    // delay time has elapsed. Don't advance the playhead.
     if (playbackDelayed) {
         memset((void *) output, 0, bufferSize * channels * sizeof(float));
         silentSamplesPlayed += bufferSize;
@@ -781,6 +799,11 @@ void ofApp::audioOut(float *output, int bufferSize, int nChannels) {
     }
 }
 
+/**
+ * Move the playhead to the given position.
+ * 
+ * @param position The desired playhead position in sample frames
+ */
 void ofApp::seek(int position) {
     if (position <= 0) {
         playheadPos = 0;
@@ -792,11 +815,19 @@ void ofApp::seek(int position) {
     stretcher->seek(playheadPos);
 }
 
+/**
+ * Set the path to the sound file to open. Called by main() when a file is
+ * passed as a command line argument.
+ */
 void ofApp::setFilePath(std::string path) {
     filePath = path;
 }
 
-/** Depends on filePath being set. */
+/**
+ * Open the soundfile. Depends on filePath having already been set.
+ *
+ * @return true if the file was opened successfully.
+ */
 bool ofApp::openFile() {
     if (soundFile.isLoaded()) {
         saveSettings();
@@ -848,18 +879,38 @@ bool ofApp::openFile() {
     return ok;
 }
 
+/**
+ * Get the x coordinate in the window corresponding to the given sample
+ * frame position, based on the current playhead position.
+ *
+ * @param sampleIndex the position to convert, in sample frames
+ * @return the corresponding x coordinate
+ */
 float ofApp::getDisplayXFromSampleIndex(int sampleIndex) {
    return ofGetWidth() / 2 + (sampleIndex - playheadPos) / samplesPerPixel;
 }
 
+/**
+ * Get the sample frame position corresponding to the given x coordinate in the
+ * window, based on the current playhead position.
+ * 
+ * @param the x coordinate to convert, in pixels
+ * @return the corresponding sample frame position
+ */
 int ofApp::getSampleIndexFromDisplayX(float displayX) {
     return samplesPerPixel * (displayX - ofGetWidth() / 2) + playheadPos;
 }
 
-// FIXME: this is inefficient; should use upper_bound/lower_bound
+/**
+ * Get the mark whose triangle is intersected by the given x coordinate.
+ *
+ * @param x the x coordinate to check
+ * @return the mark intersected by the x coordinate, or NULL if no such mark
+ */
 Mark *ofApp::getMarkAtDisplayX(int x) {
     Mark *locatedMark = NULL;
     float markX;
+    // FIXME: this is inefficient; should use upper_bound/lower_bound
     for (Mark *mark : marks) {
         if (mark->position < displayStartSample) {
             continue;
@@ -875,6 +926,14 @@ Mark *ofApp::getMarkAtDisplayX(int x) {
     return locatedMark;
 }
 
+/**
+ * Create a new mark.
+ *
+ * @param position the position at which to insert the mark, in sample frames
+ * @param label a user-supplied description of the mark
+ * @return the created mark, or NULL if it could not be created at the given
+ *         position
+ */
 Mark *ofApp::insertMark(int position, std::string label) {
     Mark *mark = new Mark();
     mark->position = position;
@@ -889,13 +948,12 @@ Mark *ofApp::insertMark(int position, std::string label) {
         return NULL;
     }
     
-    char widgetName[100];
-
     // Append a row of widgets to the mark table
     // The positionButton's name is the mark's position, enabling navigation to
     // that position by clicking on the button.
     // The same hack is used for the selection buttons, but as a further hack
     // the name is prefixed by 'S' or 'E' to differentate them.
+    char widgetName[100];
     mark->positionButton =  new ofxUILabelButton(
             formatTime(mark->position), false);
     snprintf(widgetName, 100, "%d", mark->position);
@@ -934,11 +992,17 @@ Mark *ofApp::insertMark(int position, std::string label) {
     return mark;
 }
 
+/**
+ * @param the mark to delete
+ */
 void ofApp::deleteMark(Mark *mark) {
     marks.erase(mark);
     delete mark;
 }
 
+/**
+ * Delete all marks and clear them from the GUI mark table
+ */
 void ofApp::clearMarks() {
     for (Mark *mark : marks) {
         delete mark;
@@ -947,6 +1011,12 @@ void ofApp::clearMarks() {
     markTable->clearWidgets();
 }
 
+/**
+ * Move a mark to a new position.
+ *
+ * @param mark the mark to move
+ * @param the position to move it to, in sample frames
+ */
 void ofApp::updateMarkPosition(Mark *mark, int position) {
 
     // Because marks is an ordered set, and the key for ordering is the position,
@@ -969,10 +1039,16 @@ void ofApp::updateMarkPosition(Mark *mark, int position) {
     mark->selectEndToggle->setName(widgetName);
 }
 
+/**
+ * @return the path to the directory for saved settings
+ */
 std::string ofApp::getSettingsPath() {
     return getHomeDirectory() + "/.TuneTutor/metadata/" + fileName;
 }
 
+/**
+ * Load any saved settings for the currently open sound file.
+ */
 void ofApp::loadSettings() {
     ofLog() << "Loading settings";
     std::string path = getSettingsPath();
@@ -995,12 +1071,18 @@ void ofApp::loadSettings() {
     }
 }
 
+/**
+ * Clear the fields of the metadata GUI table.
+ */
 void ofApp::clearMetadata() {
     for (ofxUITextInput *input : metadataInputs) {
         input->setTextString("");
     }
 }
 
+/**
+ * Save all current GUI parameters, marks, selection, and metadata to disk.
+ */
 void ofApp::saveSettings() {
     ofLog() << "Saving settings";
     std::string path = getSettingsPath();
@@ -1035,6 +1117,12 @@ void ofApp::saveSettings() {
     xml.save(path + "/marks.xml");
 }
 
+/**
+ * Set the number of sample frames covered by a single pixel in the pitch
+ * visualization.
+ *
+ * @param ratio the samples-per-pixel ratio
+ */
 void ofApp::setSamplesPerPixel(float ratio) {
     if (pitchDetector == NULL) {
         return;
@@ -1044,6 +1132,10 @@ void ofApp::setSamplesPerPixel(float ratio) {
     pitchValuesToDraw = ofGetWidth() / pxPerPitchValue;
 }
 
+/**
+ * @param the sample frame position to format
+ * @return a formatted string representation of the given position
+ */
 std::string ofApp::formatTime(int sample) {
     int milliseconds = sample / (float) sampleRate * 1000;
     int seconds = milliseconds / 1000;

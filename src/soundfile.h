@@ -37,7 +37,12 @@ struct SoundFileMetadata {
 };
 
 /**
- * Loads a sound file and provides access to its metadata and samples.
+ * The SoundFile class is responsible for loading audio from a local file,
+ * providing access to the sample data, and providing access to metadata
+ * embedded in the audio file. Currently, only MP3 files are supported, but
+ * support for additional formats could be implemented fairly easily and
+ * transparently to the rest of the application. MP3 decoding is provided by
+ * libmpg123, and libsndfile is a likely choice for additional formats.
  */
 class SoundFile {
 
