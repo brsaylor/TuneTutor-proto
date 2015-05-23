@@ -521,6 +521,17 @@ void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
         }
     } else if (e.widget == addMarkButton && addMarkButton->getValue()) {
         insertMark(playheadPos, "");
+    } else if (e.widget->getKind() == OFX_UI_WIDGET_LABELBUTTON
+            && ((ofxUILabelButton *) e.widget)->getValue()) {
+        // If this is a mark position button, it should have the mark's position
+        // stored as its name. Try to get the position from the name and seek to
+        // it.
+        std::stringstream ss(e.widget->getName());
+        int pos;
+        ss >> pos;
+        if (!ss.fail()) {
+            seek(pos);
+        }
     }
 }
 
@@ -836,8 +847,11 @@ Mark *ofApp::insertMark(int position, std::string label) {
     }
 
     // Append a row of widgets to the mark table
+    // The positionButton's name is the mark's position, enabling navigation to
+    // that position by clicking on the button.
     mark->positionButton =  new ofxUILabelButton(
             formatTime(mark->position), false);
+    mark->positionButton->setName(std::to_string(mark->position));
     if (lastMarkPositionButton == NULL) {
         markTable->addWidgetPosition(mark->positionButton,
                 OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
@@ -881,12 +895,19 @@ void ofApp::clearMarks() {
     markTable->clearWidgets();
 }
 
-// Because marks is an ordered set, and the key for ordering is the position,
-// the set needs to be updated when a mark's position changes.
 void ofApp::updateMarkPosition(Mark *mark, int position) {
+
+    // Because marks is an ordered set, and the key for ordering is the position,
+    // the set needs to be updated when a mark's position changes.
     marks.erase(mark);
     mark->position = position;
     marks.insert(mark);
+
+    mark->positionButton->setLabelText(formatTime(mark->position));
+
+    // The name of the positionButton is the position of the mark, to enable
+    // navigation to the mark by clicking on the button.
+    mark->positionButton->setName(std::to_string(position));
 }
 
 std::string ofApp::getSettingsPath() {
