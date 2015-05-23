@@ -11,6 +11,8 @@ and I consider it a prototype for something better to come.
 
 -- Ben Saylor (brsaylor@gmail.com)
 
+Web site: http://thecity.sfsu.edu/~bsaylor/TuneTutor/
+
 ## Library Dependencies
 
 * openFrameworks 0.8.4 - http://openframeworks.cc/
