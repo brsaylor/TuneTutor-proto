@@ -37,8 +37,8 @@ struct Mark {
     std::string label;
 
     ofxUILabelButton *positionButton;
-    ofxUILabelToggle *selectStartToggle;
-    ofxUILabelToggle *selectEndToggle;
+    ofxUILabelButton *selectStartToggle;
+    ofxUILabelButton *selectEndToggle;
     ofxUITextInput *labelInput;
 };
 

@@ -523,37 +523,47 @@ void ofApp::guiEventMarkTable(ofxUIEventArgs &e) {
         insertMark(playheadPos, "");
     } else if (e.widget->getKind() == OFX_UI_WIDGET_LABELBUTTON
             && ((ofxUILabelButton *) e.widget)->getValue()) {
-        // If this is a mark position button, it should have the mark's position
-        // stored as its name. Try to get the position from the name and seek to
-        // it.
-        std::stringstream ss(e.widget->getName());
-        int pos;
-        ss >> pos;
-        if (!ss.fail()) {
-            seek(pos);
-        }
-    } else if (e.widget->getKind() == OFX_UI_WIDGET_LABELTOGGLE
-            && ((ofxUILabelToggle *) e.widget)->getValue()) {
-        // If this is a selection start or end button, it should have the mark's
-        // position stored as its name. Try to get the position from the name
-        // and set the selection from it.
-        std::stringstream ss(e.widget->getName().substr(1));
-        int pos;
-        ss >> pos;
-        if (!ss.fail()) {
-            if (e.widget->getName()[0] == 'S') {
-                // Set the selection start
-                selectionStart = pos;
-                if (selectionStart > selectionEnd) {
-                    selectionEnd = selectionStart + sampleRate;
-                }
-            } else {
-                selectionEnd = pos;
-                if (selectionStart > selectionEnd) {
-                    selectionStart = selectionEnd - sampleRate;
+
+        char firstChar = e.widget->getName()[0];
+        if (firstChar == 'S' || firstChar == 'E') {
+            // This is a selection start or end button. It should have the
+            // mark's position stored as its name, with a prefix of 'S' for a
+            // start-selection button, or 'E' for an end selection button.
+            // Yes, this is a really ugly hack.
+            // Try to get the position from the name and set the selection from
+            // it.
+            std::stringstream ss(e.widget->getName().substr(1));
+            int pos;
+            ss >> pos;
+            if (!ss.fail()) {
+                if (e.widget->getName()[0] == 'S') {
+                    // Set the selection start
+                    selectionStart = pos;
+                    if (selectionStart > selectionEnd) {
+                        selectionEnd = selectionStart + sampleRate;
+                    }
+                } else {
+                    // Set the selection end
+                    selectionEnd = pos;
+                    if (selectionStart > selectionEnd) {
+                        selectionStart = selectionEnd - sampleRate;
+                    }
                 }
             }
+
+        } else {
+
+            // This is a mark position button. It should have the mark's
+            // position stored as its name. Try to get the position from the
+            // name and seek to it.
+            std::stringstream ss(e.widget->getName());
+            int pos;
+            ss >> pos;
+            if (!ss.fail()) {
+                seek(pos);
+            }
         }
+
     }
 }
 
@@ -884,14 +894,14 @@ Mark *ofApp::insertMark(int position, std::string label) {
                 lastMarkPositionButton->getName(), false);
     }
     lastMarkPositionButton = mark->positionButton;
-    mark->selectStartToggle = new ofxUILabelToggle(
+    mark->selectStartToggle = new ofxUILabelButton(
             "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
     mark->selectStartToggle->setName("S" + std::to_string(mark->position));
     markTable->addWidgetPosition(mark->selectStartToggle,
             OFX_UI_WIDGET_POSITION_RIGHT, OFX_UI_ALIGN_LEFT);
     mark->selectStartToggle->getRect()->setX(100);
 
-    mark->selectEndToggle = new ofxUILabelToggle(
+    mark->selectEndToggle = new ofxUILabelButton(
             "", false, 20, 0, 0, 0, OFX_UI_FONT_MEDIUM);
     mark->selectEndToggle->setName("E" + std::to_string(mark->position));
     markTable->addWidgetPosition(mark->selectEndToggle,
